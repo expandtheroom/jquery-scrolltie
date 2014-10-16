@@ -19,35 +19,16 @@
      */
     
     function ScrollTie(element, opts, undefined) {
-        if (!element) return;
-
-        this.supportedTransformsConfig = { 
-            translateX: {
-                propertyValueFormat: function(el, moveValue) {
-                    return 'translateX(' + moveValue + 'px)';
-                }
-
-            }, translateY: {
-                propertyValueFormat: function(el, moveValue) {
-                    return 'translateY(' + moveValue + 'px)';
-                }
-
-            }, rotate: {
-                propertyValueFormat: function(el, moveValue) {
-                    return 'rotate(' + moveValue + 'deg)';
-                }
-
-            }, scale: {
-                propertyValueFormat: function(el, moveValue) {
-                    return 'scale(' + moveValue + ')';
-                }
-            }
-        };
+        this.el = typeof element === 'string' ? document.querySelector(element) : element;
+        
+        if (!this.el) return;
 
         // jquery elements
-        this.el = typeof element === 'string' ? document.querySelector(element) : element;
         this.$el = $(element);
         this.container = opts.container? this.$el.parents(opts.container)[0] : undefined;
+
+        // support for CSS3 transforms
+        this.supportedTransforms = ['translateX', 'translateY', 'rotate', 'scale'];
 
         // bool options
         this.animateWhenOutOfView = opts.animateWhenOutOfView;
@@ -55,23 +36,20 @@
         // value options
         this.evt = opts.evt || 'scroll';
         this.context = opts.context || window;
-        this.property = this.supportedTransformsConfig[opts.property] ? 'transform' : opts.property;
+        this.property = this.supportedTransforms.indexOf(opts.property) !== -1 ? 'transform' : opts.property;
         this.transform = this.property === 'transform' ? opts.property : null;
         this.reverseDirection = opts.reverseDirection;
         this.speed = opts.speed || 1;
         this.delay = opts.delay;
         this.stopAtValue = opts.stopAtValue;
-        this.originalVal = opts.originalVal; // NOTE: If a propertyValueFormat is provided, an original value is probably necessary as well.
+        this.originalVal = opts.originalVal;
 
         // callback options
         this.propertyValueFormat = opts.propertyValueFormat;
-        this.stopCallback = opts.stopCallback || $.noop;
+        this.onStop = opts.onStop || $.noop;
         this.onPause = opts.onPause || $.noop;
         this.onStart = opts.onStart || $.noop;
         this.onDestroy = opts.onDestroy || $.noop;
-
-        // calculated values
-        this.isFixed = this.$el.css('position') == 'fixed';
 
         // cache dom elements
         this.$win = $(window);
@@ -110,8 +88,9 @@
             this.destroyed = false;
 
             // calculated vals
+            this.isFixed = this.$el.css('position') == 'fixed';
             this.originalVal = this.originalVal !== undefined ? this.originalVal : this.calculateOriginalVal();
-            this.propertyValueFormat = typeof this.propertyValueFormat === 'function' ? this.propertyValueFormat : this.transform ? this.supportedTransformsConfig[this.transform].propertyValueFormat : null;
+            this.propertyValueFormat = typeof this.propertyValueFormat === 'function' ? this.propertyValueFormat : this.transform ? this.getTransformPropertyValueFormat() : null;
             this.calculatedDelay = this.calculateDelay();
 
             // call animate to position things
@@ -191,32 +170,48 @@
             return this.$context.scrollTop();
         },
 
+        getTransformPropertyValueFormat: function() {
+
+            var propertyValueFormat;
+
+            switch (this.transform) {
+
+                case 'translateX':
+                    propertyValueFormat = function(el, moveValue) {
+                        return 'translateX(' + moveValue + 'px)';
+                    };
+                    break;
+                case 'translateY':
+                    propertyValueFormat = function(el, moveValue) {
+                        return 'translateY(' + moveValue + 'px)';
+                    };
+                    break;
+                case 'rotate':
+                    propertyValueFormat = function(el, moveValue) {
+                        return 'rotate(' + moveValue + 'deg)';
+                    };
+                    break;
+                case 'scale':
+                    propertyValueFormat = function(el, moveValue) {
+                        return 'scale(' + moveValue + ')';
+                    };
+                    break;
+                default:
+                    propertyValueFormat = null;
+            }
+
+            return propertyValueFormat;
+
+        },
+
         calculateOriginalVal: function() {
             var _this = this;
 
             if (!this.transform) return parseInt(this.$el.css(this.property)) || 0;
 
-            var transformValue,
-                transformValues = parse2dTransformMatrix(_this.el);
+            var transformValues = parse2dTransformMatrix(_this.el);
 
-            switch (this.transform) {
-                case 'translateX':
-                    transformValue = transformValues.xTranslate;
-                    break;
-                case 'translateY': 
-                    transformValue = transformValues.yTranslate;
-                    break;
-                case 'rotate':
-                    transformValue = transformValues.rotation;
-                    break;
-                case 'scale':
-                    transformValue = transformValues.scale;
-                    break;
-                default:
-                    transformValue = null;
-            }
-
-            return parseInt(transformValue) || 0;
+            return parseInt(transformValues && transformValues[this.transform] ? transformValues[this.transform] : 0);
         },
 
         calculateDelay: function() {
@@ -248,14 +243,14 @@
                 case true: 
                     if (moveValue >= this.stopAtValue){
                         moveValue = this.stopAtValue;
-                        if (this.stopCallback) this.stopCallback(this.$el);
                         this.stopped = true;
+                        this.onStop(this.el);
                     }
                     break;
                 case false:
                     if (moveValue <= this.stopAtValue){
                         moveValue = this.stopAtValue;
-                        if (this.stopCallback) this.stopCallback(this.$el);
+                        this.onStop(this.el);
                         this.stopped = true;
                     }
                     break;
@@ -345,8 +340,7 @@
     });
 
     function parse2dTransformMatrix(el) {
-        var el = el,
-            styles = window.getComputedStyle(el, null);
+        var styles = window.getComputedStyle(el, null);
 
         if (!el || !styles) return;
 

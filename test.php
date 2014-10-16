@@ -18,7 +18,6 @@
                 position: fixed;
                 top: 20%;
                 left: 50%;
-                margin-left: -200px;
                 width: 100px;
                 height: 100px;
                 background: #000000;
@@ -41,10 +40,16 @@
             var box = new ScrollTie('.block', {
                 property: 'translateX',
                 speed: 0.3,
+                reverseDirection: true,
+                stopAtValue: -364,
                 onStart: function(el) {
                     $(el).addClass('traveling');
+                },
+                onStop: function(el) {
+                    $(el).removeClass('traveling');
                 }
             });
+
         </script>
     </body>
 </html>
