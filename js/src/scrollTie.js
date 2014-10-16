@@ -19,9 +19,35 @@
      */
     
     function ScrollTie(element, opts, undefined) {
+        if (!element) return;
+
+        this.supportedTransformsConfig = { 
+            translateX: {
+                propertyValueFormat: function(el, moveValue) {
+                    return 'translateX(' + moveValue + 'px)';
+                }
+
+            }, translateY: {
+                propertyValueFormat: function(el, moveValue) {
+                    return 'translateY(' + moveValue + 'px)';
+                }
+
+            }, rotate: {
+                propertyValueFormat: function(el, moveValue) {
+                    return 'rotate(' + moveValue + 'deg)';
+                }
+
+            }, scale: {
+                propertyValueFormat: function(el, moveValue) {
+                    return 'scale(' + moveValue + ')';
+                }
+            }
+        };
+
         // jquery elements
+        this.el = typeof element === 'string' ? document.querySelector(element) : element;
         this.$el = $(element);
-        this.parent = opts.parent? this.$el.parents(opts.parent)[0] : undefined;
+        this.container = opts.container? this.$el.parents(opts.container)[0] : undefined;
 
         // bool options
         this.animateWhenOutOfView = opts.animateWhenOutOfView;
@@ -29,17 +55,23 @@
         // value options
         this.evt = opts.evt || 'scroll';
         this.context = opts.context || window;
-        this.property = opts.property;
+        this.property = this.supportedTransformsConfig[opts.property] ? 'transform' : opts.property;
+        this.transform = this.property === 'transform' ? opts.property : null;
         this.reverseDirection = opts.reverseDirection;
         this.speed = opts.speed || 1;
         this.delay = opts.delay;
         this.stopAtValue = opts.stopAtValue;
         this.originalVal = opts.originalVal; // NOTE: If a propertyValueFormat is provided, an original value is probably necessary as well.
 
-        // function options
-        this.valueCalculation = opts.valueCalculation; // NOTE: Value calculations must implement their own SPEED
+        // callback options
         this.propertyValueFormat = opts.propertyValueFormat;
-        this.stopCallback = opts.stopCallback;
+        this.stopCallback = opts.stopCallback || $.noop;
+        this.onPause = opts.onPause || $.noop;
+        this.onStart = opts.onStart || $.noop;
+        this.onDestroy = opts.onDestroy || $.noop;
+
+        // calculated values
+        this.isFixed = this.$el.css('position') == 'fixed';
 
         // cache dom elements
         this.$win = $(window);
@@ -70,7 +102,7 @@
         };
     }
 
-    $.extend(ParallaxElement.prototype, {
+    $.extend(ScrollTie.prototype, {
         
         init: function() {
             var self = this;
@@ -79,13 +111,8 @@
 
             // calculated vals
             this.originalVal = this.originalVal !== undefined ? this.originalVal : this.calculateOriginalVal();
-
-            var offset = this.$el.css('position') == 'fixed' ? 0 : this.$el.offset().top;
-            offset = offset > window.innerHeight ? offset - window.innerHeight : 0;
-
-            var delay = typeof this.delay == 'function' ? this.delay.call(this, this.$el) : this.delay;
-
-            this.calculatedDelay = (delay === undefined) ? offset : delay + offset;
+            this.propertyValueFormat = typeof this.propertyValueFormat === 'function' ? this.propertyValueFormat : this.transform ? this.supportedTransformsConfig[this.transform].propertyValueFormat : null;
+            this.calculatedDelay = this.calculateDelay();
 
             // call animate to position things
             if (this.canAnimate()) this.animate();
@@ -112,41 +139,33 @@
                 this.lastFrameWasAnimated = false;
                 return;
             }
-            /*-------------------------------------------- */
-            /** Use of RAF in FF results in weird choppiness - taking it away for now */
-            /*-------------------------------------------- */
-            
-            this.animate();
-            return;
-
-            /*-------------------------------------------- */
-            /** Begin use of RAF */
-            /*-------------------------------------------- */
 
             // fall back on no debounce if raf is unsupported
-            // if (!this.raf) {
-            // this.animate();
-            // return;
-            // } 
+            if (!this.raf) {
+                this.animate();
+                return;
+            } 
 
             // use raf if possible to request animation frame
-            // if (!this.isQueued) {
-            // window.requestAnimationFrame(this.animate.bind(this));
-            // this.isQueued = true;
-            // }
+            if (!this.isQueued) {
+                window.requestAnimationFrame(this.animate.bind(this));
+                this.isQueued = true;
+            }
         },
 
         canAnimate: function() {
-            var inViewElement = this.parent || this.$el[0];
+            var inViewElement = this.container || this.el;
             var inView = this.elementIsInView(inViewElement, 800);
 
-            var cannotAnimate = this.destroyed || this.paused || !inView && !this.animateWhenOutOfView || this.lastScrollY < this.calculatedDelay;
+            var cannotAnimate = this.destroyed || this.paused || !inView && !this.animateWhenOutOfView && !this.isFixed || this.lastScrollY < this.calculatedDelay;
 
             return !cannotAnimate;
         },
 
         animate: function() {
             this.isQueued = false;
+
+            if (!this.lastFrameWasAnimated) this.onStart(this.el);
             
             var moveValue = this.calculateMoveValue();
 
@@ -168,20 +187,60 @@
             this.lastFrameWasAnimated = true;
         },
 
-        animateTo: function(newPosition) {
-            var self = this;
-            this.originalVal = [newPosition];
+        getScrollY: function() {
+            return this.$context.scrollTop();
+        },
 
-            if (this.propertyValueFormat) {
-                newPosition = this.propertyValueFormat(this.$el, newPosition);
+        calculateOriginalVal: function() {
+            var _this = this;
+
+            if (!this.transform) return parseInt(this.$el.css(this.property)) || 0;
+
+            var transformValue,
+                transformValues = parse2dTransformMatrix(_this.el);
+
+            switch (this.transform) {
+                case 'translateX':
+                    transformValue = transformValues.xTranslate;
+                    break;
+                case 'translateY': 
+                    transformValue = transformValues.yTranslate;
+                    break;
+                case 'rotate':
+                    transformValue = transformValues.rotation;
+                    break;
+                case 'scale':
+                    transformValue = transformValues.scale;
+                    break;
+                default:
+                    transformValue = null;
             }
 
-            this.$el.css(this.property, newPosition);
+            return parseInt(transformValue) || 0;
+        },
 
-            if (this.property == 'transform') {
-                this.$el.css('-webkit-' + this.property, newPosition);
+        calculateDelay: function() {
+            var offset = this.isFixed ? 0 : this.$el.offset().top;
+                offset = offset > window.innerHeight ? offset - window.innerHeight : 0;
+
+            var delay = typeof this.delay == 'function' ? this.delay(this.el) : this.delay;
+
+            return delay === undefined ? offset : delay + offset;
+        },
+
+        calculateMoveValue: function() {
+            // calculate moveValue
+            var moveValue = (this.lastScrollY - this.calculatedDelay) * this.speed;
+
+            // modify based on direction
+            moveValue = this.reverseDirection ? Number(this.originalVal) - moveValue : Number(this.originalVal) + moveValue;
+            
+            // stop moving at value if specified
+            if (this.stopAtValue !== undefined) {
+                moveValue = this.checkForStop(moveValue);
             }
 
+            return Math.floor(moveValue);
         },
 
         checkForStop: function(moveValue) {
@@ -213,72 +272,6 @@
             }
         },
 
-        calculateMoveValue: function() {
-            // calculate moveValue
-            var moveValue = (this.lastScrollY - this.calculatedDelay) * this.speed;
-
-            // modify based on direction
-            moveValue = this.reverseDirection ? Number(this.originalVal) - moveValue : Number(this.originalVal) + moveValue;
-
-            // replace with custom value calculation if given
-            if (typeof this.valueCalculation == 'function') moveValue = this.valueCalculation.call(this.$el[0]);
-            
-            // stop moving at value if specified
-            if (this.stopAtValue !== undefined) {
-                moveValue = this.checkForStop(moveValue);
-            }
-
-            return Math.floor(moveValue);
-        },
-
-        calculateOriginalVal: function() {
-            var self = this;
-
-            return parseFloat(this.$el.css(this.property)) || 0;
-        },
-
-        pause: function() {
-            this.paused = true;
-            this.originalVal = this.getOriginalVal ? [this.getOriginalVal(this.$el[0])] : this.calculateOriginalVal();
-            this.$el.trigger('pause');
-        },
-
-        start: function() {
-            this.paused = false;
-            this.$el.trigger('start');
-        },
-
-        destroy: function() {
-            this.destroyed = true;
-            this.$el.css(this.property, '');
-        },
-
-        resetPosition: function(ticker) {
-            var self = this;
-
-            // debounce until resize is over
-            setTimeout(function(){
-                if (ticker == self.resizeTicker) {
-                    self.refresh();
-                }
-            }, 500);
-        },
-
-        refresh: function() {
-            this.destroy();
-            this.init();
-        },
-
-        setToWindowHeight: function(el) {
-            $(el).css('height', this.$win.height() + 'px');
-        },
-
-        getScrollY: function() {
-            return this.$context.scrollTop();
-        },
-
-        // check if a given el is in view
-        
         elementIsInView: function(el, buffer) {
 
             var body = document.body,
@@ -298,12 +291,64 @@
             var isInView = elOffsetTop <= (totalScroll + buffer) && (totalScroll < (elOffsetTop + elHeight + windowHeight + buffer));
 
             return isInView;
+        },
+
+        resetPosition: function(ticker) {
+            var self = this;
+
+            // debounce until resize is over
+            setTimeout(function(){
+                if (ticker == self.resizeTicker) {
+                    self.refresh();
+                }
+            }, 500);
+        },
+
+        animateTo: function(newPosition) {
+            var self = this;
+            this.originalVal = [newPosition];
+
+            if (this.propertyValueFormat) {
+                newPosition = this.propertyValueFormat(this.$el, newPosition);
+            }
+
+            this.$el.css(this.property, newPosition);
+
+            if (this.property == 'transform') {
+                this.$el.css('-webkit-' + this.property, newPosition);
+            }
+
+        },
+
+        pause: function() {
+            this.paused = true;
+            this.originalVal = this.getOriginalVal ? [this.getOriginalVal(this.$el[0])] : this.calculateOriginalVal();
+            this.onPause(this.el);
+        },
+
+        start: function() {
+            this.paused = false;
+            this.onStart(this.el);
+        },
+
+        destroy: function() {
+            this.destroyed = true;
+            this.$el.css(this.property, '');
+            this.onDestroy(this.el);
+        },
+
+        refresh: function() {
+            this.destroy();
+            this.init();
         }
+
     });
 
-    function parseTransformMatrix(el) {
+    function parse2dTransformMatrix(el) {
         var el = el,
             styles = window.getComputedStyle(el, null);
+
+        if (!el || !styles) return;
 
         var matrixString = styles.getPropertyValue('-webkit-transform') ||
                            styles.getPropertyValue('-moz-transform') ||

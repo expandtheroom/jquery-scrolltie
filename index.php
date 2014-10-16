@@ -2,7 +2,7 @@
 <html class="wf-loading">
 	<head>
 		<meta http-equiv="content-type" content="text/html; charset=utf-8">
-		<title>Megan Tong dot com</title>
+		<title>ScrollTie | Animate Your Things on Scroll</title>
 		<meta name="apple-mobile-web-app-capable" content="yes">
 		<meta name="viewport" content="width=1280, initial-scale=1">
 		<link rel="stylesheet" href="css/style.css">
@@ -13,7 +13,7 @@
 		<div id="mainstage">
 			
 			<section id="basic-info">
-				<h1>The Woods</h1>
+				<h1>ScrollTie</h1>
 				<div class="info-container">
 					Capriole piaffe sidepass leg yield equine caballo chevalle. Levade pirouette on the bit bend cadence beat counting strides. Cross-canter contact release suppleness round collected self-carriage. Tempi changes topline forelock mane tail, pastern hoof dishing. Gaskin crest canter trot palomino. Calm forward and straight.  Free walk figure eight Spanish Walk courbette pesade.  Mezair croupade and ballotade airs above the ground lusitano crossrail double oxer.
 				</div>
@@ -21,20 +21,26 @@
 
 			<!-- design elements -->
 
-			<section id="background" class="stage">
-				<h1>Background</h1>
-				<div class="info-container"></div>
+			<section id="ground" class="stage">
+				<div class="shrubbery"></div>
 			</section>
-			<section id="midground" class="stage">
-				<h1>Midground</h1>
-				<div class="info-container"></div>
-
-				<div class="bird"></div>
+			<section id="sky" class="stage">
+				<div class="goose"></div>
+				<div class="goose"></div>
+				<div class="goose"></div>
+				<div class="goose"></div>
+				<div class="goose"></div>
+				<div class="goose"></div>
+				<div class="goose"></div>
+				<div class="goose"></div>
+				<div class="goose"></div>
+				<div class="goose"></div>
+				<div class="goose"></div>
+				<div class="goose"></div>
 			</section>
-			<section id="foreground" class="stage">
-				<h1>Foreground</h1>
-				<div class="info-container"></div>
-
+			<section id="clouds" class="stage">
+				<div class="cloud"></div>
+				<div class="cloud"></div>
 			</section>
 
 		</div>
