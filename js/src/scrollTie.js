@@ -1,34 +1,31 @@
+/**
+ * ScrollTie: Ties a CSS property to user scroll (common use is Parallax animation)
+ */
+    
+
 (function($, window){
 
     'use strict';
 
     /*-------------------------------------------- */
-    /** Export */
+    /** Variables */
     /*-------------------------------------------- */
-
-    if (typeof exports === 'object') { // Browserify/CommonJS
-        module.exports = ScrollTie;
-    } else {
-        window.ScrollTie = ScrollTie;
-    }
-
-    /**
-     * ScrollTie: Ties a CSS property to user scroll (common use is Parallax animation)
-     * @param {element or string} element   The dom element or selector of the element to be animated on scroll
-     * @param {object} opts      Define options for animated element
-     */
     
+    var allScrollTiedElements = {},
+        scrollTiedElementCounter = 0,
+        publicGlobalMethods,
+        publicInstanceMethods;
+
+    var supportedTransforms = ['translateX', 'translateY', 'rotate', 'scale'],
+        vendorPrefixes = ['-ms-', '-webkit-'];
+
     function ScrollTie(element, opts, undefined) {
+        this.id = opts.id;
         this.el = typeof element === 'string' ? document.querySelector(element) : element;
-        
-        if (!this.el) return;
 
         // jquery elements
         this.$el = $(element);
         this.container = opts.container? this.$el.parents(opts.container)[0] : undefined;
-
-        // support for CSS3 transforms
-        this.supportedTransforms = ['translateX', 'translateY', 'rotate', 'scale'];
 
         // bool options
         this.animateWhenOutOfView = opts.animateWhenOutOfView;
@@ -36,7 +33,7 @@
         // value options
         this.evt = opts.evt || 'scroll';
         this.context = opts.context || window;
-        this.property = this.supportedTransforms.indexOf(opts.property) !== -1 ? 'transform' : opts.property;
+        this.property = supportedTransforms.indexOf(opts.property) !== -1 ? 'transform' : opts.property;
         this.transform = this.property === 'transform' ? opts.property : null;
         this.reverseDirection = opts.reverseDirection;
         this.speed = opts.speed || 1;
@@ -46,7 +43,7 @@
 
         // callback options
         this.propertyValueFormat = opts.propertyValueFormat;
-        this.onStop = opts.onStop || $.noop;
+        this.afterStop = opts.afterStop || $.noop;
         this.onPause = opts.onPause || $.noop;
         this.onStart = opts.onStart || $.noop;
         this.onDestroy = opts.onDestroy || $.noop;
@@ -73,17 +70,12 @@
             this.init();        
         }
 
-        // attach subset of methods to element for external use
-        this.$el[0].scrollTie = {
-            refresh: this.refresh,
-            animateTo: this.animateTo
-        };
     }
 
     $.extend(ScrollTie.prototype, {
         
         init: function() {
-            var self = this;
+            var _this = this;
 
             this.destroyed = false;
 
@@ -92,17 +84,18 @@
             this.originalVal = this.originalVal !== undefined ? this.originalVal : this.calculateOriginalVal();
             this.propertyValueFormat = typeof this.propertyValueFormat === 'function' ? this.propertyValueFormat : this.transform ? this.getTransformPropertyValueFormat() : null;
             this.calculatedDelay = this.calculateDelay();
+            this.staticTransformValue = this.getStaticTransformValue();
 
             // call animate to position things
             if (this.canAnimate()) this.animate();
 
             // always listen to the specified event
-            this.$context.on(this.evt, $.proxy(this.scrollHandler, this));
+            this.$context.on(this.evt, this.scrollHandler.bind(this));
 
             // reset on window resize
             this.$win.on('resize', function(e){
-                self.resizeTicker++;
-                self.resetPosition(self.resizeTicker);
+                _this.resizeTicker++;
+                _this.resetPosition(_this.resizeTicker);
             });
         },
 
@@ -153,12 +146,8 @@
                 moveValue = this.propertyValueFormat(this.$el[0], moveValue);
             }
 
-            // update css property
-            this.$el.css(this.property, moveValue);
-
-            if (this.property == 'transform') {
-                this.$el.css('-webkit-' + this.property, moveValue);
-            }
+            // sets new property value with check for transform/prefix requirements
+            this.updatePropertyValue(moveValue);
 
             // if stopped, keep track of when to un-stop
             if (this.stopped) this.checkforRestart();
@@ -166,15 +155,65 @@
             this.lastFrameWasAnimated = true;
         },
 
+        animateTo: function(newPosition) {
+            var self = this;
+            this.originalVal = [newPosition];
+
+            if (this.propertyValueFormat) {
+                newPosition = this.propertyValueFormat(this.$el, newPosition);
+            }
+
+            // sets new property value with check for transform/prefix requirements
+            this.updatePropertyValue(newPosition);
+
+        },
+
         getScrollY: function() {
             return this.$context.scrollTop();
         },
 
-        getTransformPropertyValueFormat: function() {
+        updatePropertyValue: function(moveValue) {
+            var _this = this;
+
+            if (this.transform) {
+                var transformValueWithPrefixes = {
+                    transform: _this.staticTransformValue + ' ' + moveValue
+                };
+
+                $.each(vendorPrefixes, function(i, prefix) {
+                    transformValueWithPrefixes[prefix + 'transform'] = _this.staticTransformValue + ' ' + moveValue;
+                });
+
+                this.$el.css(transformValueWithPrefixes);
+            } else {
+                this.$el.css(this.property, moveValue);
+            }
+        },
+
+        getStaticTransformValue: function() {
+            var transformValue = '';
+
+            var matrixValues = parse2dTransformMatrix(this.el);
+
+            for (var key in matrixValues) {
+                var propertyValueFormat = this.getTransformPropertyValueFormat(key);
+
+                if (matrixValues[key] && key !== this.transform) {
+                    transformValue = transformValue + ' ' + propertyValueFormat(this.el, matrixValues[key]);
+                }
+            }
+
+            return transformValue;
+        },
+
+        getTransformPropertyValueFormat: function(transform) {
+            var _this = this;
+
+            transform = transform || this.transform;
 
             var propertyValueFormat;
 
-            switch (this.transform) {
+            switch (transform) {
 
                 case 'translateX':
                     propertyValueFormat = function(el, moveValue) {
@@ -215,8 +254,8 @@
         },
 
         calculateDelay: function() {
-            var offset = this.isFixed ? 0 : this.$el.offset().top;
-                offset = offset > window.innerHeight ? offset - window.innerHeight : 0;
+            var offset = this.$el.offset().top;
+                offset = offset > window.innerHeight && !this.isFixed ? offset - window.innerHeight : 0;
 
             var delay = typeof this.delay == 'function' ? this.delay(this.el) : this.delay;
 
@@ -227,6 +266,9 @@
             // calculate moveValue
             var moveValue = (this.lastScrollY - this.calculatedDelay) * this.speed;
 
+            // modify if transform is scale to feel more logical to user
+            if (this.transform == 'scale') moveValue = moveValue * 0.01;
+
             // modify based on direction
             moveValue = this.reverseDirection ? Number(this.originalVal) - moveValue : Number(this.originalVal) + moveValue;
             
@@ -235,7 +277,8 @@
                 moveValue = this.checkForStop(moveValue);
             }
 
-            return Math.floor(moveValue);
+            // floor value to integer unless transform is scale
+            return (this.transform == 'scale') ? moveValue : Math.floor(moveValue);
         },
 
         checkForStop: function(moveValue) {
@@ -244,13 +287,13 @@
                     if (moveValue >= this.stopAtValue){
                         moveValue = this.stopAtValue;
                         this.stopped = true;
-                        this.onStop(this.el);
+                        this.afterStop(this.el);
                     }
                     break;
                 case false:
                     if (moveValue <= this.stopAtValue){
                         moveValue = this.stopAtValue;
-                        this.onStop(this.el);
+                        this.afterStop(this.el);
                         this.stopped = true;
                     }
                     break;
@@ -299,25 +342,21 @@
             }, 500);
         },
 
-        animateTo: function(newPosition) {
-            var self = this;
-            this.originalVal = [newPosition];
+        clearProperty: function() {
+            var _this = this;
 
-            if (this.propertyValueFormat) {
-                newPosition = this.propertyValueFormat(this.$el, newPosition);
+            this.$el.css(this.property, '');
+            
+            if (this.transform) {
+                $.each(vendorPrefixes, function(i, prefix) {
+                    _this.$el.css(prefix + 'transform', '');
+                });
             }
-
-            this.$el.css(this.property, newPosition);
-
-            if (this.property == 'transform') {
-                this.$el.css('-webkit-' + this.property, newPosition);
-            }
-
         },
 
         pause: function() {
             this.paused = true;
-            this.originalVal = this.getOriginalVal ? [this.getOriginalVal(this.$el[0])] : this.calculateOriginalVal();
+            this.originalVal = this.calculateOriginalVal();
             this.onPause(this.el);
         },
 
@@ -328,12 +367,15 @@
 
         destroy: function() {
             this.destroyed = true;
-            this.$el.css(this.property, '');
+            this.$context.off(this.evt, this.scrollHandler);
+            this.clearProperty();
+
+            delete(allScrollTiedElements[this.id]);
             this.onDestroy(this.el);
         },
 
         refresh: function() {
-            this.destroy();
+            this.clearProperty();
             this.init();
         }
 
@@ -365,11 +407,110 @@
         var rotation = Math.round(Math.atan2(b, a) * (180/Math.PI));
 
         return {
-            rotation: rotation,
+            rotate: parseInt(rotation),
             scale: scale,
-            xTranslate: xTranslate,
-            yTranslate: yTranslate
+            translateX: parseInt(xTranslate),
+            translateY: parseInt(yTranslate)
         };
     }
+
+    /*-------------------------------------------- */
+    /** Methods to Expose on jQuery */
+    /*-------------------------------------------- */
+    
+    publicGlobalMethods = {
+        destroy: function() {
+            console.log('destroy all');
+            $.each(allScrollTiedElements, function(i, scrollTie) {
+                scrollTie.destroy();
+            });
+        },
+
+        pause: function() {
+            console.log('pause all');
+            $.each(allScrollTiedElements, function(i, scrollTie) {
+                scrollTie.pause();
+            });
+        },
+
+        restart: function() {
+            console.log('restart all');
+            $.each(allScrollTiedElements, function(i, scrollTie) {
+                scrollTie.start();
+            });
+        },
+
+        refresh: function() {
+            console.log('refresh all');
+            $.each(allScrollTiedElements, function(i, scrollTie) {
+                scrollTie.refresh();
+            });
+        }
+    };
+
+    /*-------------------------------------------- */
+    /** Methods to Expose on jQuery object of Element */
+    /*-------------------------------------------- */
+    
+    publicInstanceMethods = {
+        destroy: function() {
+            this.destroy();
+        },
+
+        pause: function() {
+            this.pause();
+        },
+
+        restart: function() {
+            this.start();
+        },
+
+        refresh: function() {
+            this.refresh();
+        }
+    };
+
+
+    /*-------------------------------------------- */
+    /** Export */
+    /*-------------------------------------------- */
+
+    if (typeof exports === 'object') { // Browserify/CommonJS
+        module.exports = ScrollTie;
+    } else {
+        window.ScrollTie = ScrollTie;
+    }
+
+    $.fn.scrollTie = function ( options ) {
+        if (typeof options === 'string') {
+            var method = options;
+
+            if (publicInstanceMethods[method]) {
+                return publicInstanceMethods[method].apply($(this).data().plugin_scrollTie);
+            } else if (!method) {
+                return $.error('ScrollTie needs a string reference to a public method or option configuration object.');
+            } else {
+                return $.error('ScrollTie does\'t recognize the method ' + method);
+            }
+        }
+
+        return this.each(function () {
+            options.id = 'scrollTied' + scrollTiedElementCounter++;
+
+            if (!$.data(this, 'plugin_scrollTie')) {
+                $.data(this, 'plugin_scrollTie',
+                allScrollTiedElements[options.id] = new ScrollTie( this, options ));
+            }
+        });
+    };
+
+    $.scrollTie = function() {
+        var method = arguments[0],
+            args = 2 <= arguments.length ? [].slice.call(arguments, 1) : [];
+
+        if (publicGlobalMethods[method]) {
+            return publicGlobalMethods[method].apply(null, args);
+        }
+    };
 
 }(jQuery, window));

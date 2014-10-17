@@ -11,12 +11,11 @@
 
         <style>
             body {
-                background: white;
-                height: 3000px
+                height: 4000px
             }
             .block {
                 position: fixed;
-                top: 20%;
+                top: 100px;
                 left: 50%;
                 width: 100px;
                 height: 100px;
@@ -27,27 +26,47 @@
             .block.traveling {
                 opacity: 0.5;
             }
+            .two {
+                background: purple;
+                top: 320px;
+            }
+            .three {
+                background: salmon;
+                top: 530px;
+            }
+            .four {
+                background: silver;
+                top: 740px;
+            }
+
         </style>
     </head>
     <body>
             
         <div class="block"></div>
+        <div class="block two"></div>
+        <div class="block three"></div>
+        <div class="block four"></div>
 
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
         <script src="js/src/scrollTie.js"></script>
         <script>
 
-            var box = new ScrollTie('.block', {
-                property: 'translateX',
+            $('.block').scrollTie({
+                property: 'scale',
                 speed: 0.3,
-                reverseDirection: true,
-                stopAtValue: -364,
+                stopAtValue: 5,
+                delay: function(el) {
+                    return el.offsetTop - 50;
+                },
                 onStart: function(el) {
                     $(el).addClass('traveling');
-                },
-                onStop: function(el) {
-                    $(el).removeClass('traveling');
                 }
+            });
+
+            $('body').scrollTie({
+                property: 'backgroundPositionY',
+                speed: 1.7,
             });
 
         </script>
