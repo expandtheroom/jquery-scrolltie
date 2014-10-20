@@ -76,6 +76,13 @@ header {
 }
 .scale {
   left: 65%;
+  -webkit-transition: background 0.25s ease-in-out;
+  -moz-transition: background 0.25s ease-in-out;
+  -o-transition: background 0.25s ease-in-out;
+  transition: background 0.25s ease-in-out;
+}
+.scale.finished {
+  background: #89c200;
 }
 .background-position {
   left: 82.5%;

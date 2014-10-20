@@ -50,7 +50,14 @@
 
             $('.scale').scrollTie({
                 property: 'scale',
-                speed: 0.1
+                speed: 0.1,
+                stopAtValue: 3,
+                afterStop: function(el) {
+                	$(el).addClass('finished');
+                },
+                onStart: function(el) {
+                	$(el).removeClass('finished');
+                }
             });
 
             $('.background-position').scrollTie({

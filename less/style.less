@@ -63,6 +63,11 @@ header {
 }
 .scale {
     left: 65%;
+    .transition(background, 0.25s, ease-in-out);
+
+    &.finished {
+    	background: @brightGreen;
+    }
 }
 .background-position {
     left: 82.5%;

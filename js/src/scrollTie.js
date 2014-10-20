@@ -345,8 +345,10 @@
 
         checkforRestart: function(moveValue) {
             if (this.originalVal < this.stopAtValue && moveValue <= this.stopAtValue) {
+                this.onStart(this.el);
                 this.stopped = false;
             } else if (this.originalVal > this.stopAtValue && moveValue >= this.stopAtValue) {
+                this.onStart(this.el);
                 this.stopped = false;
             }
         },
