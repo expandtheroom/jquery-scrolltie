@@ -2,13 +2,26 @@
  * ScrollTie: Ties a CSS property to user scroll (common use is Parallax animation)
  */
 
-(function($, window){
+(function (factory) {
+    if (typeof define === 'function' && define.amd) {
+        // AMD. Register as an anonymous module.
+        define(['jquery'], factory);
+    } else if (typeof exports === 'object') {
+        // Node/CommonJS
+        factory(require('jquery'));
+    } else {
+        // Browser globals
+        factory(jQuery);
+    }
+}(function($){
 
     'use strict';
 
     /*-------------------------------------------- */
     /** Variables */
     /*-------------------------------------------- */
+
+    var win = window;
     
     var allScrollTiedElements = {},
         scrollTiedElementCounter = 0,
@@ -32,7 +45,7 @@
         
         // value options
         this.evt = opts.evt || 'scroll';
-        this.context = opts.context || window;
+        this.context = opts.context || win;
 
         this.property = supportedTransforms.indexOf(opts.property) !== -1 ? 'transform' : opts.property;
         this.property = bgPositionProperties.indexOf(opts.property) !== -1 ? 'backgroundPosition' : this.property;
@@ -54,7 +67,7 @@
         this.onDestroy = opts.onDestroy || $.noop;
 
         // cache dom elements
-        this.$win = $(window);
+        this.$win = $(win);
         this.$doc = $(document);
         this.$context = $(this.context);
 
@@ -68,8 +81,8 @@
         this.lastFrameWasAnimated = false;
 
         // feature detection
-        window.requestAnimationFrame = window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame;
-        this.raf = !!window.requestAnimationFrame;
+        win.requestAnimationFrame = win.requestAnimationFrame || win.webkitRequestAnimationFrame || win.mozRequestAnimationFrame;
+        this.raf = !!win.requestAnimationFrame;
 
         if (!opts.manualInit) {
             this.init();        
@@ -98,7 +111,7 @@
             // always listen to the specified event
             this.$context.on(this.evt, this.scrollHandler.bind(this));
 
-            // reset on window resize
+            // reset on win resize
             this.$win.on('resize', function(e){
                 _this.resizeTicker++;
                 _this.resetPosition(_this.resizeTicker);
@@ -111,6 +124,10 @@
         },
 
         requestAnimation: function() {
+            var isOverscrolled = this.$win.height() + this.lastScrollY > this.$doc.height();
+
+            if (isOverscrolled) return;
+
             // first check if animation is possible
             if (!this.canAnimate()) {
                 if (this.lastFrameWasAnimated) this.animateTo(this.originalVal);
@@ -126,7 +143,7 @@
 
             // use raf if possible to request animation frame
             if (!this.isQueued) {
-                window.requestAnimationFrame(this.animate.bind(this));
+                win.requestAnimationFrame(this.animate.bind(this));
                 this.isQueued = true;
             }
         },
@@ -279,7 +296,7 @@
 
         calculateDelay: function() {
             var offset = this.$el.offset().top;
-                offset = offset > window.innerHeight && !this.isFixed ? offset - window.innerHeight : 0;
+                offset = offset > win.innerHeight && !this.isFixed ? offset - win.innerHeight : 0;
 
             var delay = typeof this.delay == 'function' ? this.delay(this.el) : this.delay;
 
@@ -345,12 +362,12 @@
                 body.clientHeight, documentElement.clientHeight
             );
 
-            var windowHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight,
-                totalScroll = this.lastScrollY + windowHeight,
+            var winHeight = win.innerHeight || document.documentElement.clientHeight || document.body.clientHeight,
+                totalScroll = this.lastScrollY + winHeight,
                 elOffsetTop = el.offsetTop,
                 elHeight = el.clientHeight;
 
-            var isInView = elOffsetTop <= (totalScroll + buffer) && (totalScroll < (elOffsetTop + elHeight + windowHeight + buffer));
+            var isInView = elOffsetTop <= (totalScroll + buffer) && (totalScroll < (elOffsetTop + elHeight + winHeight + buffer));
 
             return isInView;
         },
@@ -406,7 +423,7 @@
     });
 
     function parse2dTransformMatrix(el) {
-        var styles = window.getComputedStyle(el, null);
+        var styles = win.getComputedStyle(el, null);
 
         if (!el || !styles) return;
 
@@ -499,12 +516,6 @@
     /** Export */
     /*-------------------------------------------- */
 
-    if (typeof exports === 'object') { // Browserify/CommonJS
-        module.exports = ScrollTie;
-    } else {
-        window.ScrollTie = ScrollTie;
-    }
-
     $.fn.scrollTie = function ( options ) {
         if (typeof options === 'string') {
             var method = options;
@@ -537,4 +548,4 @@
         }
     };
 
-}(jQuery, window));
+}));

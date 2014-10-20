@@ -21,23 +21,54 @@
 /*-------------------------------------------- */
 
 body {
-	position: relative;
-	padding: 0;
-	margin: 0;
-	background: @bgcolor;
+	height: 5000px;
+	background: ghostwhite;
 }
-
 
 /*-------------------------------------------- */
 /** Typography */
 /*-------------------------------------------- */
 
+h1 {
+	margin-bottom: 0;
+	font-size: 4em;
+}
 
+header {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	text-align: center;
+}
 
 /*-------------------------------------------- */
 /** Animated Elements */
 /*-------------------------------------------- */
 
+.block {
+    position: fixed;
+    top: 45%;
+    left: 12.5%;
+    width: 5%;
+    height: 8%;
+    background: #000000;
+    transform: translate(0, 30px);
+}
+.translateX {
+    left: 30%;
+}
+.rotate {
+    left: 47.5%;
+}
+.scale {
+    left: 65%;
+}
+.background-position {
+    left: 82.5%;
+    outline: 1px solid black;
+    background: url(/img/dots.png);
+}
 
 
 /*-------------------------------------------- */

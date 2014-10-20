@@ -8,75 +8,54 @@
         <link rel="stylesheet" href="css/style.css">
         <link href='http://fonts.googleapis.com/css?family=Amatic+SC:700' rel='stylesheet' type='text/css'>
         <script type="text/javascript" src="js/modernizr.custom.js"></script>
-
-        <style>
-            body {
-            	height: 4000px;
-                background: url(/img/ground.jpg) 0 -400px no-repeat;
-                background-size: auto 150%;
-                background-attachment: fixed;
-            }
-            .block {
-                position: fixed;
-                bottom: -50px;
-                left: 100px;
-                width: 100px;
-                height: 100px;
-                background: #000000;
-                transform: translate(0, 30px);
-                transition: opacity 0.25s ease-in-out;
-            }
-            .block.traveling {
-                opacity: 0.5;
-            }
-            .two {
-                background: purple;
-                left: 320px;
-            }
-            .three {
-                background: salmon;
-                left: 530px;
-            }
-            .four {
-                background: silver;
-                left: 740px;
-            }
-
-        </style>
+        <link rel="stylesheet" src="css/style.min.css">
     </head>
     <body>
 
-    	<div class="ground">
+    	<section id="mainstage">
+    		<header>
+				<h1>ScrollTie</h1>
+				<h2>a jQuery plugin that ties a CSS property to user scroll</h2>
+			</header>
             
-	        <div class="block"></div>
-	        <div class="block two"></div>
-	        <div class="block three"></div>
-	        <div class="block four"></div>
+	        <div class="block translateY"></div>
+	        <div class="block translateX"></div>
+	        <div class="block rotate"></div>
+	        <div class="block scale"></div>
+	        <div class="block background-position"></div>
 
-	        <div class="clouds"></div>
+	    </section>
 
-	    </div>
 
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-        <script src="js/src/scrollTie.js"></script>
+        <script src="js/scrollTie.min.js"></script>
         <script>
 
-            $('.block').scrollTie({
+            $('.translateY').scrollTie({
                 property: 'translateY',
                 reverseDirection: true,
-                speed: 0.3,
-                delay: function(el) {
-                    return el.offsetLeft * 1.3 - 200;
-                },
-                onStart: function(el) {
-                    $(el).addClass('traveling');
-                }
+                speed: 0.4
             });
 
-            $('body').scrollTie({
-                property: 'backgroundPositionY',
-                stopAtValue: 0,
-                speed: .05,
+            $('.translateX').scrollTie({
+                property: 'translateX',
+                reverseDirection: true,
+                speed: 0.1
+            });
+
+            $('.rotate').scrollTie({
+                property: 'rotate',
+                speed: 0.7
+            });
+
+            $('.scale').scrollTie({
+                property: 'scale',
+                speed: 0.1
+            });
+
+            $('.background-position').scrollTie({
+                property: 'backgroundPositionX',
+                speed: 0.4
             });
 
         </script>

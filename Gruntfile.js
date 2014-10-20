@@ -61,29 +61,16 @@ module.exports = function(grunt) {
 
             development: {
                 files: { 
-                    'js/custom.min.js': jsSrcFiles 
+                    'js/scrollTie.min.js': jsSrcFiles 
                 }
             }
 
         },
 
-        concat: {
-            options: {
-                separator: ';'
-            },
-            development: {
-                src: jsVendorFiles.concat(jsSrcFiles),
-                dest: 'js/scripts.js'
-            },
-            prod: {
-                src: jsVendorFiles.push('js/custom.min.js'),
-                dest: 'js/scripts.min.js'
-            }
-        },
-
         jshint: {
             files: jsSrcFiles
         }
+
     });
 
     /*-------------------------------------------- */
@@ -96,13 +83,12 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-concat');
-    grunt.loadNpmTasks('grunt-browserify');
 
     /*-------------------------------------------- */
     /** Register Tasks */
     /*-------------------------------------------- */
 
     grunt.registerTask('default', ['less', 'concat:development' ]);
-    grunt.registerTask('dist', ['less', 'cssmin', 'uglify', 'concat' ]);
+    grunt.registerTask('dist', ['less', 'cssmin', 'uglify' ]);
 
 };
