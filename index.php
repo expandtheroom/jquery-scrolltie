@@ -1,51 +1,84 @@
 <!doctype html>
 <html class="wf-loading">
-	<head>
-		<meta http-equiv="content-type" content="text/html; charset=utf-8">
-		<title>ScrollTie | Animate Your Things on Scroll</title>
-		<meta name="apple-mobile-web-app-capable" content="yes">
-		<meta name="viewport" content="width=1280, initial-scale=1">
-		<link rel="stylesheet" href="css/style.css">
-		<link href='http://fonts.googleapis.com/css?family=Amatic+SC:700' rel='stylesheet' type='text/css'>
-		<script type="text/javascript" src="js/modernizr.custom.js"></script>
-	</head>
-	<body>
-		<div id="mainstage">
-			
-			<section id="basic-info">
-				<h1>ScrollTie</h1>
-				<div class="info-container">
-					Capriole piaffe sidepass leg yield equine caballo chevalle. Levade pirouette on the bit bend cadence beat counting strides. Cross-canter contact release suppleness round collected self-carriage. Tempi changes topline forelock mane tail, pastern hoof dishing. Gaskin crest canter trot palomino. Calm forward and straight.  Free walk figure eight Spanish Walk courbette pesade.  Mezair croupade and ballotade airs above the ground lusitano crossrail double oxer.
-				</div>
-			</section>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8">
+        <title>ScrollTie | Animate Your Things on Scroll</title>
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="viewport" content="width=1280, initial-scale=1">
+        <link rel="stylesheet" href="css/style.css">
+        <link href='http://fonts.googleapis.com/css?family=Amatic+SC:700' rel='stylesheet' type='text/css'>
+        <script type="text/javascript" src="js/modernizr.custom.js"></script>
 
-			<!-- design elements -->
+        <style>
+            body {
+            	height: 4000px;
+                background: url(/img/ground.jpg) 0 -400px no-repeat;
+                background-size: auto 150%;
+                background-attachment: fixed;
+            }
+            .block {
+                position: fixed;
+                bottom: -50px;
+                left: 100px;
+                width: 100px;
+                height: 100px;
+                background: #000000;
+                transform: translate(0, 30px);
+                transition: opacity 0.25s ease-in-out;
+            }
+            .block.traveling {
+                opacity: 0.5;
+            }
+            .two {
+                background: purple;
+                left: 320px;
+            }
+            .three {
+                background: salmon;
+                left: 530px;
+            }
+            .four {
+                background: silver;
+                left: 740px;
+            }
 
-			<section id="ground" class="stage">
-				<div class="shrubbery"></div>
-			</section>
-			<section id="sky" class="stage">
-				<div class="goose"></div>
-				<div class="goose"></div>
-				<div class="goose"></div>
-				<div class="goose"></div>
-				<div class="goose"></div>
-				<div class="goose"></div>
-				<div class="goose"></div>
-				<div class="goose"></div>
-				<div class="goose"></div>
-				<div class="goose"></div>
-				<div class="goose"></div>
-				<div class="goose"></div>
-			</section>
-			<section id="clouds" class="stage">
-				<div class="cloud"></div>
-				<div class="cloud"></div>
-			</section>
+        </style>
+    </head>
+    <body>
 
-		</div>
+    	<div class="ground">
+            
+	        <div class="block"></div>
+	        <div class="block two"></div>
+	        <div class="block three"></div>
+	        <div class="block four"></div>
 
-		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-		<script type="text/javascript" src="js/scripts.js"></script>
-	</body>
+	        <div class="clouds"></div>
+
+	    </div>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+        <script src="js/src/scrollTie.js"></script>
+        <script>
+
+            $('.block').scrollTie({
+                property: 'translateY',
+                reverseDirection: true,
+                speed: 0.3,
+                delay: function(el) {
+                    return el.offsetLeft * 1.3 - 200;
+                },
+                onStart: function(el) {
+                    $(el).addClass('traveling');
+                }
+            });
+
+            $('body').scrollTie({
+                property: 'backgroundPositionY',
+                stopAtValue: 0,
+                speed: .05,
+            });
+
+        </script>
+    </body>
 </html>

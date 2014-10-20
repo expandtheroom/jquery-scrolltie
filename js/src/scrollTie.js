@@ -1,7 +1,6 @@
 /**
  * ScrollTie: Ties a CSS property to user scroll (common use is Parallax animation)
  */
-    
 
 (function($, window){
 
