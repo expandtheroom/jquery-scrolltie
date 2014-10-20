@@ -17,6 +17,7 @@
         publicInstanceMethods;
 
     var supportedTransforms = ['translateX', 'translateY', 'rotate', 'scale'],
+        bgPositionProperties = ['backgroundPositionY', 'backgroundPositionX'],
         vendorPrefixes = ['-ms-', '-webkit-'];
 
     function ScrollTie(element, opts, undefined) {
@@ -33,8 +34,13 @@
         // value options
         this.evt = opts.evt || 'scroll';
         this.context = opts.context || window;
+
         this.property = supportedTransforms.indexOf(opts.property) !== -1 ? 'transform' : opts.property;
+        this.property = bgPositionProperties.indexOf(opts.property) !== -1 ? 'backgroundPosition' : this.property;
+
         this.transform = this.property === 'transform' ? opts.property : null;
+        this.backgroundPositionAxis = this.property === 'backgroundPosition' ? opts.property : null;
+
         this.reverseDirection = opts.reverseDirection;
         this.speed = opts.speed || 1;
         this.delay = opts.delay;
@@ -82,9 +88,10 @@
             // calculated vals
             this.isFixed = this.$el.css('position') == 'fixed';
             this.originalVal = this.originalVal !== undefined ? this.originalVal : this.calculateOriginalVal();
-            this.propertyValueFormat = typeof this.propertyValueFormat === 'function' ? this.propertyValueFormat : this.transform ? this.getTransformPropertyValueFormat() : null;
+            this.propertyValueFormat = typeof this.propertyValueFormat === 'function' ? this.propertyValueFormat : (this.transform || this.backgroundPositionAxis) ? this.getSpecialPropertyValueFormat(this.transform || this.backgroundPositionAxis) : null;
             this.calculatedDelay = this.calculateDelay();
             this.staticTransformValue = this.getStaticTransformValue();
+
 
             // call animate to position things
             if (this.canAnimate()) this.animate();
@@ -160,7 +167,7 @@
             this.originalVal = [newPosition];
 
             if (this.propertyValueFormat) {
-                newPosition = this.propertyValueFormat(this.$el, newPosition);
+                newPosition = this.propertyValueFormat(this.el, newPosition);
             }
 
             // sets new property value with check for transform/prefix requirements
@@ -196,7 +203,7 @@
             var matrixValues = parse2dTransformMatrix(this.el);
 
             for (var key in matrixValues) {
-                var propertyValueFormat = this.getTransformPropertyValueFormat(key);
+                var propertyValueFormat = this.getSpecialPropertyValueFormat(key);
 
                 if (matrixValues[key] && key !== this.transform) {
                     transformValue = transformValue + ' ' + propertyValueFormat(this.el, matrixValues[key]);
@@ -206,14 +213,12 @@
             return transformValue;
         },
 
-        getTransformPropertyValueFormat: function(transform) {
+        getSpecialPropertyValueFormat: function(specialProperty) {
             var _this = this;
-
-            transform = transform || this.transform;
 
             var propertyValueFormat;
 
-            switch (transform) {
+            switch (specialProperty) {
 
                 case 'translateX':
                     propertyValueFormat = function(el, moveValue) {
@@ -235,6 +240,20 @@
                         return 'scale(' + moveValue + ')';
                     };
                     break;
+                case ('backgroundPositionX'):
+                    propertyValueFormat = function(el, moveValue) {
+                        var yPos = getComputedStyle(el) ? getComputedStyle(el).backgroundPosition.split(' ')[1] : 0;
+
+                        return moveValue + 'px ' + yPos;
+                    };
+                    break;
+                case ('backgroundPositionY'):
+                    propertyValueFormat = function(el, moveValue) {
+                        var xPos = getComputedStyle(el) ? getComputedStyle(el).backgroundPosition.split(' ')[0] : 0;
+
+                        return xPos + ' ' + moveValue + 'px';
+                    };
+                    break;
                 default:
                     propertyValueFormat = null;
             }
@@ -246,7 +265,13 @@
         calculateOriginalVal: function() {
             var _this = this;
 
-            if (!this.transform) return parseInt(this.$el.css(this.property)) || 0;
+            if (!this.transform && !this.backgroundPositionAxis) return parseInt(this.$el.css(this.property)) || 0;
+
+            if (this.backgroundPositionAxis) {
+                var bgPosition = getComputedStyle(this.el) ? getComputedStyle(this.el).backgroundPosition.split(' ') : [0,0];
+
+                return this.backgroundPositionAxis === 'backgroundPositionY' ? parseInt(bgPosition[1]) : parseInt(bgPosition[0]);
+            } 
 
             var transformValues = parse2dTransformMatrix(_this.el);
 

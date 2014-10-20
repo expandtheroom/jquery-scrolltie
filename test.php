@@ -11,7 +11,8 @@
 
         <style>
             body {
-                height: 4000px
+                height: 4000px;
+                background-position: 500px 0;
             }
             .block {
                 position: fixed;
@@ -53,9 +54,9 @@
         <script>
 
             $('.block').scrollTie({
-                property: 'scale',
+                property: 'translateX',
+                reverseDirection: true,
                 speed: 0.3,
-                stopAtValue: 5,
                 delay: function(el) {
                     return el.offsetTop - 50;
                 },
@@ -66,7 +67,7 @@
 
             $('body').scrollTie({
                 property: 'backgroundPositionY',
-                speed: 1.7,
+                speed: .5,
             });
 
         </script>
