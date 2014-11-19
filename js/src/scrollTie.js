@@ -498,18 +498,22 @@
     publicInstanceMethods = {
         destroy: function() {
             this.destroy();
+            return this.$el;
         },
 
         pause: function() {
             this.pause();
+            return this.$el;
         },
 
         restart: function() {
             this.start();
+            return this.$el;
         },
 
         refresh: function() {
             this.refresh();
+            return this.$el;
         }
     };
 
@@ -543,7 +547,7 @@
 
     $.scrollTie = function() {
         var method = arguments[0],
-            args = 2 <= arguments.length ? [].slice.call(arguments, 1) : [];
+            args = arguments.length >= 2 ? [].slice.call(arguments, 1) : [];
 
         if (publicGlobalMethods[method]) {
             return publicGlobalMethods[method].apply(null, args);

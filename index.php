@@ -51,7 +51,7 @@
             $('.scale').scrollTie({
                 property: 'scale',
                 speed: 0.1,
-                stopAtValue: 3,
+                stopAtValue: 3.2,
                 afterStop: function(el) {
                 	$(el).addClass('finished');
                 },
