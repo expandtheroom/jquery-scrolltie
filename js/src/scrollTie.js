@@ -523,7 +523,8 @@
     /*-------------------------------------------- */
 
     $.fn.scrollTie = function ( options ) {
-        if (typeof options === 'string') {
+
+        if (typeof options === 'string' || !options) {
             var method = options;
 
             if (publicInstanceMethods[method]) {

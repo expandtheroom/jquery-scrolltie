@@ -8,6 +8,11 @@
     "grunt-contrib-less": "~0.7.0",
     "grunt-contrib-watch": "~0.5.3",
     "grunt-contrib-concat": "~0.3.0",
-    "grunt-contrib-cssmin": "~0.6.1"
+    "grunt-contrib-cssmin": "~0.6.1",
+    "chai": "^1.10.0",
+    "mocha": "^2.0.1",
+    "jquery": "^2.1.1",
+    "phantomjs": "^1.9.12",
+    "mocha-phantomjs": "^3.5.1"
   }
 }
