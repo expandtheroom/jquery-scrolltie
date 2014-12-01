@@ -5,9 +5,12 @@
         <title>ScrollTie | Unit Tests</title>
         <meta name="apple-mobile-web-app-capable" content="yes">
         <meta name="viewport" content="width=1280, initial-scale=1">
-        <link rel="stylesheet" href="/css/style.min.css" type="text/css">
         <link rel="stylesheet" href="/node_modules/mocha/mocha.css" type="text/css">
-        <link href='http://fonts.googleapis.com/css?family=Amatic+SC:700' rel='stylesheet' type='text/css'>
+        <style>
+            body {
+                min-height: 3000px;
+            }
+        </style>
     </head>
     <body>
         <div id="mocha">
@@ -16,6 +19,8 @@
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
         <script src="/js/src/scrollTie.js"></script>
         <script src="/node_modules/chai/chai.js"></script>
+        <script src="/node_modules/sinon-chai/lib/sinon-chai.js"></script>
+        <script src="/node_modules/sinon/pkg/sinon-1.12.1.js"></script>
         <script src="/node_modules/mocha/mocha.js"></script>
         <script>
             mocha.setup('bdd');
@@ -24,7 +29,8 @@
         </script>
         <script src="scrollTie-tests.js"></script>
         <script>
-            mocha.checkLeaks();
+            // mocha.checkLeaks();
+            mocha.globals(['jQuery', 'requestAnimationFrame', 'sinon']);
             mocha.run();
 
         </script>

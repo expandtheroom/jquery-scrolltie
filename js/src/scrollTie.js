@@ -553,6 +553,8 @@
         if (publicGlobalMethods[method]) {
             return publicGlobalMethods[method].apply(null, args);
         }
+
+        return allScrollTiedElements;
     };
 
 }));
