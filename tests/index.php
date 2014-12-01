@@ -6,11 +6,6 @@
         <meta name="apple-mobile-web-app-capable" content="yes">
         <meta name="viewport" content="width=1280, initial-scale=1">
         <link rel="stylesheet" href="/node_modules/mocha/mocha.css" type="text/css">
-        <style>
-            body {
-                min-height: 3000px;
-            }
-        </style>
     </head>
     <body>
         <div id="mocha">
@@ -29,10 +24,9 @@
         </script>
         <script src="scrollTie-tests.js"></script>
         <script>
-            // mocha.checkLeaks();
-            mocha.globals(['jQuery', 'requestAnimationFrame', 'sinon']);
+            mocha.checkLeaks();
+            mocha.globals(['jQuery*', 'requestAnimationFrame', 'sinon']);
             mocha.run();
-
         </script>
     </body>
 </html>

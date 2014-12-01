@@ -109,7 +109,7 @@
             if (this.canAnimate()) this.animate();
 
             // always listen to the specified event
-            this.$context.on(this.evt, this.scrollHandler.bind(this));
+            this.$context.on(this.evt + '.' + this.id, this.scrollHandler.bind(this));
 
             // reset on win resize
             this.$win.on('resize', function(e){
@@ -399,20 +399,22 @@
 
         pause: function() {
             this.paused = true;
-            this.originalVal = this.calculateOriginalVal();
             this.onPause(this.el);
         },
 
         start: function() {
             this.paused = false;
+            this.originalVal = this.calculateOriginalVal();
+            this.calculatedDelay = this.lastScrollY;
             this.onStart(this.el);
         },
 
         destroy: function() {
             this.destroyed = true;
-            this.$context.off(this.evt, this.scrollHandler);
+            this.$context.off('.' + this.id);
             this.clearProperty();
 
+            $.removeData(this.el, 'plugin_scrollTie');
             delete(allScrollTiedElements[this.id]);
             this.onDestroy(this.el);
         },
@@ -528,6 +530,8 @@
             var method = options;
 
             if (publicInstanceMethods[method]) {
+                if (!$(this).data().plugin_scrollTie) return $.error('ScrollTie not instantiated on this element');
+                
                 return publicInstanceMethods[method].apply($(this).data().plugin_scrollTie);
             } else if (!method) {
                 return $.error('ScrollTie needs a string reference to a public method or option configuration object.');
