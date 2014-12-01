@@ -5,10 +5,9 @@
         <title>ScrollTie | Animate Your Things on Scroll</title>
         <meta name="apple-mobile-web-app-capable" content="yes">
         <meta name="viewport" content="width=1280, initial-scale=1">
-        <link rel="stylesheet" href="css/style.css">
+        <link href="css/style.css" rel="stylesheet">
         <link href='http://fonts.googleapis.com/css?family=Amatic+SC:700' rel='stylesheet' type='text/css'>
         <script type="text/javascript" src="js/modernizr.custom.js"></script>
-        <link rel="stylesheet" src="css/style.min.css">
     </head>
     <body>
 

@@ -20,11 +20,7 @@ module.exports = function(grunt) {
             },
             less: {
                 files: ['less/*.less'],
-                tasks: ['less:development']
-            },
-            concat: {
-                files: jsSrcFiles,
-                tasks: ['concat:development']
+                tasks: ['less']
             },
             jshint: {
                 files: jsSrcFiles,
@@ -40,26 +36,19 @@ module.exports = function(grunt) {
 
         less: {
 
-            development: {
+            default: {
                 options: {
-                    paths: lessOptionsPaths
+                    paths: lessOptionsPaths,
+                    cleancss: true
                 },
                 files: lessOuputFiles
             }
 
         },
 
-        cssmin: {
-            minify: {
-                files: {
-                    'css/style.min.css': 'css/style.css'
-                }
-            }
-        },
-
         uglify: {
 
-            development: {
+            default: {
                 files: { 
                     'js/scrollTie.min.js': jsSrcFiles 
                 }
@@ -88,7 +77,7 @@ module.exports = function(grunt) {
     /** Register Tasks */
     /*-------------------------------------------- */
 
-    grunt.registerTask('default', ['less', 'concat:development' ]);
-    grunt.registerTask('dist', ['less', 'cssmin', 'uglify' ]);
+    grunt.registerTask('default', ['less']);
+    grunt.registerTask('dist', ['less', 'uglify' ]);
 
 };
