@@ -12,66 +12,12 @@ module.exports = function(grunt) {
     var jsVendorFiles = ['js/vendor/*.js'],
         jsSrcFiles = ['js/src/*.js'];
 
-    grunt.initConfig({
-
-        watch: {
-            options: {
-                interval: 20
-            },
-            less: {
-                files: ['less/*.less'],
-                tasks: ['less']
-            },
-            jshint: {
-                files: jsSrcFiles,
-                tasks: ['jshint']
-            },
-            all: {
-                files: ['*/**', '!node_modules/*/**', '!less/*.less'],
-                options: {
-                    livereload: true
-                }
-            },
-        },
-
-        less: {
-
-            default: {
-                options: {
-                    paths: lessOptionsPaths,
-                    cleancss: true
-                },
-                files: lessOuputFiles
-            }
-
-        },
-
-        uglify: {
-
-            default: {
-                files: { 
-                    'js/scrollTie.min.js': jsSrcFiles 
-                }
-            }
-
-        },
-
-        jshint: {
-            files: jsSrcFiles
-        }
-
-    });
-
     /*-------------------------------------------- */
-    /** Load Tasks */
+    /** Initialize and load tasks from grunt folder */
     /*-------------------------------------------- */
-
-    grunt.loadNpmTasks('grunt-contrib-less');
-    grunt.loadNpmTasks('grunt-contrib-cssmin');
-    grunt.loadNpmTasks('grunt-contrib-watch');
-    grunt.loadNpmTasks('grunt-contrib-uglify');
-    grunt.loadNpmTasks('grunt-contrib-jshint');
-    grunt.loadNpmTasks('grunt-contrib-concat');
+    
+    grunt.initConfig();
+    grunt.loadTasks('grunt');
 
     /*-------------------------------------------- */
     /** Register Tasks */

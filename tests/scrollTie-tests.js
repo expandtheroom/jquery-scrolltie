@@ -1,4 +1,4 @@
-var timeoutDelay = 20;
+var timeoutDelay = 30;
 
 describe('ScrollTie', function() {
     var element;

@@ -19,8 +19,8 @@
             
 	        <div class="block translateY"></div>
 	        <div class="block translateX"></div>
-	        <div class="block rotate"></div>
 	        <div class="block scale"></div>
+            <div class="block rotate"></div>
 	        <div class="block background-position"></div>
 
 	    </section>
@@ -50,7 +50,7 @@
             $('.scale').scrollTie({
                 property: 'scale',
                 speed: 0.1,
-                stopAtValue: 3.2,
+                stopAtValue: 3,
                 afterStop: function(el) {
                 	$(el).addClass('finished');
                 },

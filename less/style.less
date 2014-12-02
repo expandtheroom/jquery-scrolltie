@@ -48,21 +48,21 @@ header {
 
 .block {
     position: fixed;
-    top: 45%;
-    left: 12.5%;
-    width: 5%;
-    height: 8%;
+    top: 40%;
+    left: 50%;
+    width: 120px;
+    height: 110px;
     background: #000000;
-    transform: translate(0, 30px);
+    .translateX(-310%);
 }
 .translateX {
-    left: 30%;
+    .translateX(-180%);
 }
 .rotate {
-    left: 47.5%;
+    .translateX(-50%);
 }
 .scale {
-    left: 65%;
+    .translateX(80%);
     .transition(background, 0.25s, ease-in-out);
 
     &.finished {
@@ -70,13 +70,8 @@ header {
     }
 }
 .background-position {
-    left: 82.5%;
+    .translateX(210%);
     outline: 1px solid black;
-    background: url(/img/dots.png);
+    background: aliceblue url(/img/treeline-sm.png) repeat-x;
+    background-size: auto 100%;
 }
-
-
-/*-------------------------------------------- */
-/** Animations */
-/*-------------------------------------------- */
-

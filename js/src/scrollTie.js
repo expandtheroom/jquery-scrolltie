@@ -42,18 +42,20 @@
 
         // bool options
         this.animateWhenOutOfView = opts.animateWhenOutOfView;
+        this.reverseDirection = opts.reverseDirection;
         
-        // value options
-        this.evt = opts.evt || 'scroll';
-        this.context = opts.context || win;
-
+        // handle CSS property option
         this.property = supportedTransforms.indexOf(opts.property) !== -1 ? 'transform' : opts.property;
         this.property = bgPositionProperties.indexOf(opts.property) !== -1 ? 'backgroundPosition' : this.property;
 
         this.transform = this.property === 'transform' ? opts.property : null;
         this.backgroundPositionAxis = this.property === 'backgroundPosition' ? opts.property : null;
 
-        this.reverseDirection = opts.reverseDirection;
+        // custom event and context defaults
+        this.evt = opts.evt || 'scroll';
+        this.context = opts.context || win;
+
+        // motion property values
         this.speed = opts.speed || 1;
         this.delay = opts.delay;
         this.stopAtValue = opts.stopAtValue;
@@ -66,7 +68,7 @@
         this.onStart = opts.onStart || $.noop;
         this.onDestroy = opts.onDestroy || $.noop;
 
-        // cache dom elements
+        // cache jQuery objects
         this.$win = $(win);
         this.$doc = $(document);
         this.$context = $(this.context);
@@ -76,7 +78,6 @@
         this.isQueued = false;
         this.paused = false;
         this.stopped = false;
-        this.destroyed = false;
         this.resizeTicker = 0;
         this.lastFrameWasAnimated = false;
 
@@ -84,6 +85,7 @@
         win.requestAnimationFrame = win.requestAnimationFrame || win.webkitRequestAnimationFrame || win.mozRequestAnimationFrame;
         this.raf = !!win.requestAnimationFrame;
 
+        // auto-initialize if manual option is falsy
         if (!opts.manualInit) {
             this.init();        
         }
@@ -94,8 +96,6 @@
         
         init: function() {
             var _this = this;
-
-            this.destroyed = false;
 
             // calculated vals
             this.isFixed = this.$el.css('position') == 'fixed';
@@ -112,7 +112,7 @@
             this.$context.on(this.evt + '.' + this.id, this.scrollHandler.bind(this));
 
             // reset on win resize
-            this.$win.on('resize', function(e){
+            this.$win.on('resize.' + this.id, function(e){
                 _this.resizeTicker++;
                 _this.resetPosition(_this.resizeTicker);
             });
@@ -152,7 +152,7 @@
             var inViewElement = this.container || this.el;
             var inView = this.elementIsInView(inViewElement, 800);
 
-            var cannotAnimate = this.destroyed || this.paused || !inView && !this.animateWhenOutOfView && !this.isFixed || this.lastScrollY < this.calculatedDelay;
+            var cannotAnimate = this.paused || !inView && !this.animateWhenOutOfView && !this.isFixed || this.lastScrollY < this.calculatedDelay;
 
             return !cannotAnimate;
         },
@@ -410,12 +410,18 @@
         },
 
         destroy: function() {
-            this.destroyed = true;
+            // remove evt listeners
             this.$context.off('.' + this.id);
+            this.$win.off('.' + this.id);
+
+            // remove inline styles from plugin
             this.clearProperty();
 
+            // remove data from jQuery el and instance
             $.removeData(this.el, 'plugin_scrollTie');
             delete(allScrollTiedElements[this.id]);
+
+            // call onDestroy option
             this.onDestroy(this.el);
         },
 
@@ -529,9 +535,9 @@
         if (typeof options === 'string' || !options) {
             var method = options;
 
-            if (publicInstanceMethods[method]) {
-                if (!$(this).data().plugin_scrollTie) return $.error('ScrollTie not instantiated on this element');
-                
+            if (!$(this).data().plugin_scrollTie) {
+                return $.error('ScrollTie not instantiated on this element');
+            } else if (publicInstanceMethods[method]) {
                 return publicInstanceMethods[method].apply($(this).data().plugin_scrollTie);
             } else if (!method) {
                 return $.error('ScrollTie needs a string reference to a public method or option configuration object.');
