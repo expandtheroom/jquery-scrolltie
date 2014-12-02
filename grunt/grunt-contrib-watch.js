@@ -11,6 +11,10 @@ module.exports = function(grunt) {
             files: ['js/src/*.js'],
             tasks: ['jshint']
         },
+        uglify: {
+            files: ['js/src/*.js'],
+            tasks: ['uglify']
+        },
         all: {
             files: ['*/**', '!node_modules/*/**', '!less/*.less'],
             options: {
