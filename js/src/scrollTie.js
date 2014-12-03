@@ -23,14 +23,21 @@
 
     var win = window;
     
-    var allScrollTiedElements = {},
+    var allScrollTiedElements = [],
         scrollTiedElementCounter = 0,
         publicGlobalMethods,
         publicInstanceMethods;
 
-    var supportedTransforms = ['translateX', 'translateY', 'rotate', 'scale'],
-        bgPositionProperties = ['backgroundPositionY', 'backgroundPositionX'],
-        vendorPrefixes = ['-ms-', '-webkit-'];
+        var specialPropertiesMap = {
+            translateY: 'transform',
+            translateX: 'transform',
+            rotate: 'transform',
+            scale: 'transform',
+            backgroundPositionY: 'backgroundPosition',
+            backgroundPositionX: 'backgroundPosition'
+        };
+
+        var vendorPrefixes = ['-ms-', '-webkit-'];
 
     function ScrollTie(element, opts, undefined) {
         this.id = opts.id;
@@ -44,9 +51,8 @@
         this.animateWhenOutOfView = opts.animateWhenOutOfView;
         this.reverseDirection = opts.reverseDirection;
         
-        // handle CSS property option
-        this.property = supportedTransforms.indexOf(opts.property) !== -1 ? 'transform' : opts.property;
-        this.property = bgPositionProperties.indexOf(opts.property) !== -1 ? 'backgroundPosition' : this.property;
+        // handle special CSS property option, default to value of property option
+        this.property = specialPropertiesMap[opts.property] || opts.property;
 
         this.transform = this.property === 'transform' ? opts.property : null;
         this.backgroundPositionAxis = this.property === 'backgroundPosition' ? opts.property : null;
@@ -419,7 +425,7 @@
 
             // remove data from jQuery el and instance
             $.removeData(this.el, 'plugin_scrollTie');
-            delete(allScrollTiedElements[this.id]);
+            allScrollTiedElements.splice(allScrollTiedElements.indexOf(this), 1);
 
             // call onDestroy option
             this.onDestroy(this.el);
@@ -551,7 +557,7 @@
 
             if (!$.data(this, 'plugin_scrollTie')) {
                 $.data(this, 'plugin_scrollTie',
-                allScrollTiedElements[options.id] = new ScrollTie( this, options ));
+                allScrollTiedElements[0] = new ScrollTie( this, options ));
             }
         });
     };

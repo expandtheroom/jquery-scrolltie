@@ -34,8 +34,7 @@ describe('ScrollTie', function() {
 
         it('should add scrollTie instance to allScrollTiedElements', function() {
             $(element).scrollTie({ property: 'top' });
-
-            expect($.scrollTie()).to.have.ownProperty('scrollTied0');
+            expect($.scrollTie().indexOf($.data(element, 'plugin_scrollTie'))).to.not.equal(-1);
         })
 
         describe('stopAtValue option', function() {
@@ -276,17 +275,17 @@ describe('ScrollTie', function() {
 
     describe('scrollTie#destroy', function() {
         var $el,
-            scrollTieId;
+            scrollTieInstance;
 
         it('should remove instance from allScrollTiedElements', function() {
             $el = $(element);
             $el.scrollTie({ property: 'top' });
 
-            scrollTieId = $el.data().plugin_scrollTie.id;
+            scrollTieInstance = $el.data().plugin_scrollTie;
 
             $el.scrollTie('destroy');
 
-            expect($.scrollTie()[scrollTieId]).to.be.undefined;
+            expect($.scrollTie().indexOf(scrollTieInstance)).to.equal(-1);
         })
 
         it('should no longer update property', function(done) {
