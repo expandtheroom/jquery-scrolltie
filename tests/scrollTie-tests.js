@@ -9,6 +9,7 @@ describe('ScrollTie', function() {
 
     after(function() {
         $('body').css('height', 'auto');
+        $.scrollTie('destroy');
     })
 
     beforeEach(function(done) {

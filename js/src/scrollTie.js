@@ -477,28 +477,24 @@
     
     publicGlobalMethods = {
         destroy: function() {
-            console.log('destroy all');
             $.each(allScrollTiedElements, function(i, scrollTie) {
                 scrollTie.destroy();
             });
         },
 
         pause: function() {
-            console.log('pause all');
             $.each(allScrollTiedElements, function(i, scrollTie) {
                 scrollTie.pause();
             });
         },
 
         restart: function() {
-            console.log('restart all');
             $.each(allScrollTiedElements, function(i, scrollTie) {
                 scrollTie.start();
             });
         },
 
         refresh: function() {
-            console.log('refresh all');
             $.each(allScrollTiedElements, function(i, scrollTie) {
                 scrollTie.refresh();
             });
