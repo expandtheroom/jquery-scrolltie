@@ -9,13 +9,12 @@ describe('ScrollTie', function() {
 
     after(function() {
         $('body').css('height', 'auto');
-        $.scrollTie('destroy');
     })
 
     beforeEach(function(done) {
         element = document.createElement('div');
         $('body').append(element);
-        $(element).css({position: 'absolute', top: '0px'});
+        $(element).css({position: 'absolute', top: '0px', position: 'fixed'});
         done();
     })
 
@@ -141,6 +140,44 @@ describe('ScrollTie', function() {
                     window.scrollTo(0, 0);
                 }, timeoutDelay);
             })
+
+        })
+
+        describe('animateWhenOutOfView option', function() {
+
+            before(function(done) {
+                $(element).css({ position: 'absolute', top: '100px'});
+                done();
+            })
+
+            describe('default: false', function() {
+
+                it('should increment value from natural delay/offset', function(done) {
+                    done();
+                })
+
+                it('should stop incrementing value when element is no longer in view', function(done) {
+                    done();
+                })
+            
+            })
+
+            describe('true', function() {
+
+                it('should not begin incrementing value until element is in view (default offset)', function(done) {
+                    done();
+                })
+
+                it('should increment value from natural delay/offset', function(done) {
+                    done();
+                })
+
+                it('should continue incrementing value when element is no longer in view', function(done) {
+                    done();
+                })
+            
+            })
+
 
         })
 
@@ -308,26 +345,8 @@ describe('ScrollTie', function() {
         })
     })
 
-    // methods to test
-    // 1. ? init - test that a new instance has been added to allScrollTiedElements
-    // 2. ? destroy - test that the instance does not exist in allScrollTiedElements. test scroll and make sure property does not update
-    // 3. pause - pause and test scroll, make sure prop doesn't update
-    // 4. start - test scroll and make sure property has updated
-    // 5. refresh - not sure how to test
-    // 6. test each option
-    //      - respects stopAtValue
-    //      - respects reverseDirection
-    //      - handles transform properties
-    //      - handles background position X and Y properties
-    //      - respects delay
-    //      - respects speed ?
-    //      - provides correct context
-    //      - does not initialize if manualInit is set
-    //      
-    //      - calls onStart
-    //      - calls afterStop
-    //      - calls onPause
-    //      - calls onDestroy
-    //      
+    // methods left to test:
+    // 1. refresh
+    // 2. animateWhenOutOfView
 
 });

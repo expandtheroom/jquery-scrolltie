@@ -28,16 +28,16 @@
         publicGlobalMethods,
         publicInstanceMethods;
 
-        var specialPropertiesMap = {
-            translateY: 'transform',
-            translateX: 'transform',
-            rotate: 'transform',
-            scale: 'transform',
-            backgroundPositionY: 'backgroundPosition',
-            backgroundPositionX: 'backgroundPosition'
-        };
+    var specialPropertiesMap = {
+        translateY: 'transform',
+        translateX: 'transform',
+        rotate: 'transform',
+        scale: 'transform',
+        backgroundPositionY: 'backgroundPosition',
+        backgroundPositionX: 'backgroundPosition'
+    };
 
-        var vendorPrefixes = ['-ms-', '-webkit-'];
+    var vendorPrefixes = ['-ms-', '-webkit-'];
 
     function ScrollTie(element, opts, undefined) {
         this.id = opts.id;
@@ -106,10 +106,13 @@
             // calculated vals
             this.isFixed = this.$el.css('position') == 'fixed';
             this.originalVal = this.originalVal !== undefined ? this.originalVal : this.calculateOriginalVal();
-            this.propertyValueFormat = typeof this.propertyValueFormat === 'function' ? this.propertyValueFormat : (this.transform || this.backgroundPositionAxis) ? this.getSpecialPropertyValueFormat(this.transform || this.backgroundPositionAxis) : null;
             this.calculatedDelay = this.calculateDelay();
             this.staticTransformValue = this.getStaticTransformValue();
 
+            // get special propertyValueFormat if prop is special & option is not a custom function
+            if (typeof this.propertyValueFormat !== 'function' && (this.backgroundPosition || this.transform)) {
+                this.propertyValueFormat = this.getSpecialPropertyValueFormat(this.transform || this.backgroundPositionAxis)
+            }
 
             // call animate to position things
             if (this.canAnimate()) this.animate();
@@ -130,9 +133,8 @@
         },
 
         requestAnimation: function() {
-            var isOverscrolled = this.$win.height() + this.lastScrollY > this.$doc.height();
-
-            if (isOverscrolled) return;
+            // if page is overscrolled, return
+            if (this.$win.height() + this.lastScrollY > this.$doc.height()) return;
 
             // first check if animation is possible
             if (!this.canAnimate()) {
@@ -156,7 +158,7 @@
 
         canAnimate: function() {
             var inViewElement = this.container || this.el;
-            var inView = this.elementIsInView(inViewElement, 800);
+            var inView = this.elementIsInView(inViewElement);
 
             var cannotAnimate = this.paused || !inView && !this.animateWhenOutOfView && !this.isFixed || this.lastScrollY < this.calculatedDelay;
 
@@ -287,7 +289,10 @@
         calculateOriginalVal: function() {
             var _this = this;
 
-            if (!this.transform && !this.backgroundPositionAxis) return parseInt(this.$el.css(this.property)) || 0;
+            if (this.transform) {
+                var transformValues = parse2dTransformMatrix(_this.el);
+                return parseInt(transformValues && transformValues[this.transform] ? transformValues[this.transform] : 0);
+            }
 
             if (this.backgroundPositionAxis) {
                 var bgPosition = getComputedStyle(this.el) ? getComputedStyle(this.el).backgroundPosition.split(' ') : [0,0];
@@ -295,9 +300,8 @@
                 return this.backgroundPositionAxis === 'backgroundPositionY' ? parseInt(bgPosition[1]) : parseInt(bgPosition[0]);
             } 
 
-            var transformValues = parse2dTransformMatrix(_this.el);
-
-            return parseInt(transformValues && transformValues[this.transform] ? transformValues[this.transform] : 0);
+            return parseInt(this.$el.css(this.property)) || 0;
+            
         },
 
         calculateDelay: function() {
@@ -329,22 +333,11 @@
         },
 
         checkForStop: function(moveValue) {
-            switch (this.originalVal < this.stopAtValue) {
-                case true: 
-                    if (moveValue >= this.stopAtValue){
-                        moveValue = this.stopAtValue;
-                        this.stopped = true;
-                        this.afterStop(this.el);
-                    }
-                    break;
-                case false:
-                    if (moveValue <= this.stopAtValue){
-                        moveValue = this.stopAtValue;
-                        this.afterStop(this.el);
-                        this.stopped = true;
-                    }
-                    break;
-                }
+            if (!this.reverseDirection && moveValue >= this.stopAtValue || this.reverseDirection && moveValue <= this.stopAtValue) {            
+                moveValue = this.stopAtValue;
+                this.afterStop(this.el);
+                this.stopped = true;
+            }
 
             return moveValue;
         },
@@ -360,6 +353,7 @@
         },
 
         elementIsInView: function(el, buffer) {
+            buffer = buffer || 100;
 
             var body = document.body,
                 documentElement = document.documentElement;
@@ -478,6 +472,7 @@
     publicGlobalMethods = {
         destroy: function() {
             $.each(allScrollTiedElements, function(i, scrollTie) {
+                console.log(scrollTie);
                 scrollTie.destroy();
             });
         },
@@ -544,7 +539,7 @@
             } else if (!method) {
                 return $.error('ScrollTie needs a string reference to a public method or option configuration object.');
             } else {
-                return $.error('ScrollTie does\'t recognize the method ' + method);
+                return $.error('ScrollTie doesn\'t recognize the method ' + method);
             }
         }
 
@@ -552,8 +547,11 @@
             options.id = 'scrollTied' + scrollTiedElementCounter++;
 
             if (!$.data(this, 'plugin_scrollTie')) {
-                $.data(this, 'plugin_scrollTie',
-                allScrollTiedElements[0] = new ScrollTie( this, options ));
+                var newScrollTie = new ScrollTie( this, options );
+
+                allScrollTiedElements.push(newScrollTie);
+
+                $.data(this, 'plugin_scrollTie', newScrollTie);
             }
         });
     };
