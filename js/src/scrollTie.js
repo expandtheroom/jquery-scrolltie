@@ -28,18 +28,275 @@
         publicGlobalMethods,
         publicInstanceMethods;
 
-    var specialPropertiesMap = {
-        translateY: 'transform',
-        translateX: 'transform',
-        rotate: 'transform',
-        scale: 'transform',
-        backgroundPositionY: 'backgroundPosition',
-        backgroundPositionX: 'backgroundPosition'
-    };
+    var vendorPrefixes = ['-ms-', '-webkit-'],
+        vendorPrefixCount = vendorPrefixes.length;
 
-    var vendorPrefixes = ['-ms-', '-webkit-'];
+
+
+
+
+
+
+
+
+    /*-------------------------------------------- */
+    /** Property Objects */
+    /*-------------------------------------------- */
+    
+    function PropertyUpdater(element, opts) {
+        this.opts = opts;
+
+        this.el = element;
+        this.$el = $(element);
+
+        this.property = this._getProperty();
+        this.reverseDirection = opts.reverseDirection;
+        this.speed = this._getSpeed();
+        this.stopAtValue = opts.stopAtValue;
+        this.originalVal = opts.originalVal !== undefined ? opts.originalVal : this._getOriginalVal();
+        this.propertyValueFormat = opts.propertyValueFormat || this._createPropertyValueFormatter();
+
+        //callbacks
+        this.afterStop = opts.afterStop || $.noop;
+        this.onPause = opts.onPause || $.noop;
+        this.onStart = opts.onStart || $.noop;
+
+        // tracking
+        this.paused = false;
+        this.stopped = false;
+    }
+
+    $.extend(PropertyUpdater.prototype, {
+
+        _createPropertyValueFormatter: function() {
+            return function(moveValue) {
+                return moveValue + 'px';
+            };
+        },
+
+        _getProperty: function() {
+            return this.property;
+        },
+
+        _getOriginalVal: function() {
+            return parseInt(this.$el.css(this.property)) || 0;
+            
+        },
+
+        _getSpeed: function() {
+            return this.opts.speed || 1;
+        },
+
+        _shouldStop: function(moveValue) {
+            if (!this.reverseDirection && moveValue >= this.stopAtValue || this.reverseDirection && moveValue <= this.stopAtValue) {
+                this.afterStop(this.el);
+                this.stopped = true;
+                return true;
+            }
+
+            return false;
+        },
+
+        _checkForRestart: function(moveValue) {
+            if ((this.originalVal < this.stopAtValue && moveValue <= this.stopAtValue) || (this.originalVal > this.stopAtValue && moveValue >= this.stopAtValue)) {
+                this.onStart(this.el);
+                this.stopped = false;
+            }
+        },
+
+        clearProperty: function() {
+            this.$el.css(this.property, '');
+        },
+
+        pause: function() {
+            this.paused = true;
+            this.onPause(this.el);
+        },
+
+        start: function() {
+            this.paused = false;
+            this.originalVal = this._getOriginalVal();
+            this.onStart(this.el);
+        },
+
+        moveTo: function(newPosition) {
+            this.originalVal = newPosition;
+
+            // sets new property value with check for transform/prefix requirements
+            this.$el.css(this.property, this.propertyValueFormat(newPosition));
+        },
+
+        reset: function() {
+            this.moveTo(this.originalVal);
+        },
+
+        update: function(moveValue) {
+            // modify based on direction
+            moveValue = this.reverseDirection ? Number(this.originalVal) - moveValue : Number(this.originalVal) + moveValue;
+            
+            // stop moving at value if specified
+            if (this.stopAtValue !== undefined) {
+                moveValue = this._shouldStop() ? this.stopAtValue : moveValue;
+            }
+
+            // if stopped, check for restart
+            if (this.stopped) {
+                this._checkForRestart();
+            }
+
+            this.$el.css(this.property, this.propertyValueFormat(moveValue));
+        }
+
+    });
+
+    function TransformPropertyUpdater(element, opts) {
+        this.transform = opts.property;
+        
+        PropertyUpdater.call(this, element, opts);
+        
+        this.staticTransformValue = this._getStaticTransformValue();
+    }
+
+    extend(PropertyUpdater, TransformPropertyUpdater, {
+        _createPropertyValueFormatter: function() {
+            var propertyValueFormatMap = {
+                translateX: function(moveValue) {
+                    return 'translateX(' + moveValue + 'px)';
+                },
+                translateY: function(moveValue) {
+                    return 'translateY(' + moveValue + 'px)';
+                },
+                rotate: function(moveValue) {
+                    return 'rotate(' + moveValue + 'deg)';
+                },
+                scale: function(moveValue) {
+                    return 'scale(' + moveValue + ')';
+                }
+            };
+
+            return propertyValueFormatMap[this.transform];
+        },
+
+        _getProperty: function() {
+            return 'transform';
+        },
+
+        _getSpeed: function() {
+            return this.transform == 'scale' ? this.opts.speed * 0.01 : this.opts.speed;
+        },
+
+        _getOriginalVal: function() {
+            var transformValues = parse2dTransformMatrix(this.el);
+            return parseInt(transformValues && transformValues[this.transform] ? transformValues[this.transform] : 0);
+        },
+
+        _getStaticTransformValue: function() {
+            var transformValue = '';
+
+            var matrixValues = parse2dTransformMatrix(this.el);
+
+            for (var key in matrixValues) {
+
+                if (matrixValues[key] && key !== this.transform) {
+                    transformValue = transformValue + ' ' + this.propertyValueFormat(matrixValues[key]);
+                }
+            }
+
+            return transformValue;
+        },
+
+        clearProperty: function() {
+            var _this = this;
+
+            $.each(vendorPrefixes, function(i, prefix) {
+                _this.$el.css(prefix + 'transform', '');
+            });
+
+            PropertyUpdater.prototype.clearProperty.call(this);
+        },
+
+        update: function(moveValue) {
+            moveValue = (this.transform == 'scale') ? moveValue : Math.floor(moveValue);
+
+            var transformValueWithPrefixes = {
+                transform: this.staticTransformValue + ' ' + moveValue
+            };
+
+            for (var i = 0; i < vendorPrefixCount; i++) {
+                transformValueWithPrefixes[vendorPrefixes[i] + 'transform'] = this.staticTransformValue + ' ' + moveValue;
+            }
+
+            PropertyUpdater.prototype.update.call(this, this.property, transformValueWithPrefixes);
+        }
+    });
+
+    function BgPositionPropertyUpdater(element, opts) {
+        this.backgroundPositionAxis = opts.property;
+
+        PropertyUpdater.call(this, element, opts);
+    }
+
+    extend(PropertyUpdater, BgPositionPropertyUpdater, {
+        _createPropertyValueFormatter: function() {
+            var propertyValueFormatMap = {
+                backgroundPositionX: function(moveValue) {
+                    var yPos = getComputedStyle(this.el) ? getComputedStyle(this.el).backgroundPosition.split(' ')[1] : 0;
+
+                    return moveValue + 'px ' + yPos;
+                },
+                backgroundPositionY: function(moveValue) {
+                    var xPos = getComputedStyle(this.el) ? getComputedStyle(this.el).backgroundPosition.split(' ')[0] : 0;
+
+                    return xPos + ' ' + moveValue + 'px';
+                }
+            };
+
+            return propertyValueFormatMap[this.backgroundPositionAxis];
+        },
+
+        _getProperty: function() {
+            return 'backgroundPosition';
+        },
+
+        _getOriginalVal: function() {
+            var bgPosition = getComputedStyle(this.el) ? getComputedStyle(this.el).backgroundPosition.split(' ') : [0,0];
+
+            return this.backgroundPositionAxis === 'backgroundPositionY' ? parseInt(bgPosition[1]) : parseInt(bgPosition[0]);
+        }
+    });
+
+    function createPropertyUpdater(element, opts) {
+        var specialPropertiesMap = {
+            translateY: TransformPropertyUpdater,
+            translateX: TransformPropertyUpdater,
+            rotate: TransformPropertyUpdater,
+            scale: TransformPropertyUpdater,
+            backgroundPositionY: BgPositionPropertyUpdater,
+            backgroundPositionX: BgPositionPropertyUpdater
+        };
+
+        return specialPropertiesMap[opts.property] ? new specialPropertiesMap[opts.property](element, opts) : new PropertyUpdater(element, opts);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+    /*-------------------------------------------- */
+    /** ScrollTie */
+    /*-------------------------------------------- */
 
     function ScrollTie(element, opts, undefined) {
+        this.options = opts;
+
         this.id = opts.id;
         this.el = typeof element === 'string' ? document.querySelector(element) : element;
 
@@ -47,31 +304,15 @@
         this.$el = $(element);
         this.container = opts.container? this.$el.parents(opts.container)[0] : undefined;
 
-        // bool options
+        // options
         this.animateWhenOutOfView = opts.animateWhenOutOfView;
-        this.reverseDirection = opts.reverseDirection;
-        
-        // handle special CSS property option, default to value of property option
-        this.property = specialPropertiesMap[opts.property] || opts.property;
-
-        this.transform = this.property === 'transform' ? opts.property : null;
-        this.backgroundPositionAxis = this.property === 'backgroundPosition' ? opts.property : null;
+        this.delay = opts.delay;
 
         // custom event and context defaults
         this.evt = opts.evt || 'scroll';
         this.context = opts.context || win;
 
-        // motion property values
-        this.speed = opts.speed || 1;
-        this.delay = opts.delay;
-        this.stopAtValue = opts.stopAtValue;
-        this.originalVal = opts.originalVal;
-
         // callback options
-        this.propertyValueFormat = opts.propertyValueFormat;
-        this.afterStop = opts.afterStop || $.noop;
-        this.onPause = opts.onPause || $.noop;
-        this.onStart = opts.onStart || $.noop;
         this.onDestroy = opts.onDestroy || $.noop;
 
         // cache jQuery objects
@@ -82,8 +323,6 @@
         // tracking vars
         this.lastScrollY = this.getScrollY();
         this.isQueued = false;
-        this.paused = false;
-        this.stopped = false;
         this.resizeTicker = 0;
         this.lastFrameWasAnimated = false;
 
@@ -103,16 +342,11 @@
         init: function() {
             var _this = this;
 
+            this.propertyUpdater = createPropertyUpdater(this.el, this.options);
+
             // calculated vals
             this.isFixed = this.$el.css('position') == 'fixed';
-            this.originalVal = this.originalVal !== undefined ? this.originalVal : this.calculateOriginalVal();
             this.calculatedDelay = this.calculateDelay();
-            this.staticTransformValue = this.getStaticTransformValue();
-
-            // get special propertyValueFormat if prop is special & option is not a custom function
-            if (typeof this.propertyValueFormat !== 'function' && (this.backgroundPosition || this.transform)) {
-                this.propertyValueFormat = this.getSpecialPropertyValueFormat(this.transform || this.backgroundPositionAxis)
-            }
 
             // call animate to position things
             if (this.canAnimate()) this.animate();
@@ -138,7 +372,7 @@
 
             // first check if animation is possible
             if (!this.canAnimate()) {
-                if (this.lastFrameWasAnimated) this.animateTo(this.originalVal);
+                if (this.lastFrameWasAnimated) this.propertyUpdater.reset();
                 this.lastFrameWasAnimated = false;
                 return;
             }
@@ -156,6 +390,19 @@
             }
         },
 
+        animate: function() {
+            this.isQueued = false;
+
+            if (!this.lastFrameWasAnimated) this.propertyUpdater.onStart(this.el);
+            
+            var moveValue = this.calculateMoveValue();
+
+            // sets new property value with check for transform/prefix requirements
+            this.propertyUpdater.update(moveValue);
+
+            this.lastFrameWasAnimated = true;
+        },
+
         canAnimate: function() {
             var inViewElement = this.container || this.el;
             var inView = this.elementIsInView(inViewElement);
@@ -165,143 +412,8 @@
             return !cannotAnimate;
         },
 
-        animate: function() {
-            this.isQueued = false;
-
-            if (!this.lastFrameWasAnimated) this.onStart(this.el);
-            
-            var moveValue = this.calculateMoveValue();
-
-            // property value needs custom format
-            if (this.propertyValueFormat) {
-                moveValue = this.propertyValueFormat(this.$el[0], moveValue);
-            }
-
-            // sets new property value with check for transform/prefix requirements
-            this.updatePropertyValue(moveValue);
-
-            // if stopped, keep track of when to un-stop
-            if (this.stopped) this.checkforRestart();
-
-            this.lastFrameWasAnimated = true;
-        },
-
-        animateTo: function(newPosition) {
-            var self = this;
-            this.originalVal = [newPosition];
-
-            if (this.propertyValueFormat) {
-                newPosition = this.propertyValueFormat(this.el, newPosition);
-            }
-
-            // sets new property value with check for transform/prefix requirements
-            this.updatePropertyValue(newPosition);
-
-        },
-
         getScrollY: function() {
             return this.$context.scrollTop();
-        },
-
-        updatePropertyValue: function(moveValue) {
-            var _this = this;
-
-            if (this.transform) {
-                var transformValueWithPrefixes = {
-                    transform: _this.staticTransformValue + ' ' + moveValue
-                };
-
-                $.each(vendorPrefixes, function(i, prefix) {
-                    transformValueWithPrefixes[prefix + 'transform'] = _this.staticTransformValue + ' ' + moveValue;
-                });
-
-                this.$el.css(transformValueWithPrefixes);
-            } else {
-                this.$el.css(this.property, moveValue);
-            }
-        },
-
-        getStaticTransformValue: function() {
-            var transformValue = '';
-
-            var matrixValues = parse2dTransformMatrix(this.el);
-
-            for (var key in matrixValues) {
-                var propertyValueFormat = this.getSpecialPropertyValueFormat(key);
-
-                if (matrixValues[key] && key !== this.transform) {
-                    transformValue = transformValue + ' ' + propertyValueFormat(this.el, matrixValues[key]);
-                }
-            }
-
-            return transformValue;
-        },
-
-        getSpecialPropertyValueFormat: function(specialProperty) {
-            var _this = this;
-
-            var propertyValueFormat;
-
-            switch (specialProperty) {
-
-                case 'translateX':
-                    propertyValueFormat = function(el, moveValue) {
-                        return 'translateX(' + moveValue + 'px)';
-                    };
-                    break;
-                case 'translateY':
-                    propertyValueFormat = function(el, moveValue) {
-                        return 'translateY(' + moveValue + 'px)';
-                    };
-                    break;
-                case 'rotate':
-                    propertyValueFormat = function(el, moveValue) {
-                        return 'rotate(' + moveValue + 'deg)';
-                    };
-                    break;
-                case 'scale':
-                    propertyValueFormat = function(el, moveValue) {
-                        return 'scale(' + moveValue + ')';
-                    };
-                    break;
-                case ('backgroundPositionX'):
-                    propertyValueFormat = function(el, moveValue) {
-                        var yPos = getComputedStyle(el) ? getComputedStyle(el).backgroundPosition.split(' ')[1] : 0;
-
-                        return moveValue + 'px ' + yPos;
-                    };
-                    break;
-                case ('backgroundPositionY'):
-                    propertyValueFormat = function(el, moveValue) {
-                        var xPos = getComputedStyle(el) ? getComputedStyle(el).backgroundPosition.split(' ')[0] : 0;
-
-                        return xPos + ' ' + moveValue + 'px';
-                    };
-                    break;
-                default:
-                    propertyValueFormat = null;
-            }
-
-            return propertyValueFormat;
-
-        },
-
-        calculateOriginalVal: function() {
-            var _this = this;
-
-            if (this.transform) {
-                var transformValues = parse2dTransformMatrix(_this.el);
-                return parseInt(transformValues && transformValues[this.transform] ? transformValues[this.transform] : 0);
-            }
-
-            if (this.backgroundPositionAxis) {
-                var bgPosition = getComputedStyle(this.el) ? getComputedStyle(this.el).backgroundPosition.split(' ') : [0,0];
-
-                return this.backgroundPositionAxis === 'backgroundPositionY' ? parseInt(bgPosition[1]) : parseInt(bgPosition[0]);
-            } 
-
-            return parseInt(this.$el.css(this.property)) || 0;
-            
         },
 
         calculateDelay: function() {
@@ -314,42 +426,7 @@
         },
 
         calculateMoveValue: function() {
-            // calculate moveValue
-            var moveValue = (this.lastScrollY - this.calculatedDelay) * this.speed;
-
-            // modify if transform is scale to feel more logical to user
-            if (this.transform == 'scale') moveValue = moveValue * 0.01;
-
-            // modify based on direction
-            moveValue = this.reverseDirection ? Number(this.originalVal) - moveValue : Number(this.originalVal) + moveValue;
-            
-            // stop moving at value if specified
-            if (this.stopAtValue !== undefined) {
-                moveValue = this.checkForStop(moveValue);
-            }
-
-            // floor value to integer unless transform is scale
-            return (this.transform == 'scale') ? moveValue : Math.floor(moveValue);
-        },
-
-        checkForStop: function(moveValue) {
-            if (!this.reverseDirection && moveValue >= this.stopAtValue || this.reverseDirection && moveValue <= this.stopAtValue) {            
-                moveValue = this.stopAtValue;
-                this.afterStop(this.el);
-                this.stopped = true;
-            }
-
-            return moveValue;
-        },
-
-        checkforRestart: function(moveValue) {
-            if (this.originalVal < this.stopAtValue && moveValue <= this.stopAtValue) {
-                this.onStart(this.el);
-                this.stopped = false;
-            } else if (this.originalVal > this.stopAtValue && moveValue >= this.stopAtValue) {
-                this.onStart(this.el);
-                this.stopped = false;
-            }
+            return (this.lastScrollY - this.calculatedDelay) * this.propertyUpdater.speed;
         },
 
         elementIsInView: function(el, buffer) {
@@ -375,38 +452,23 @@
         },
 
         resetPosition: function(ticker) {
-            var self = this;
+            var _this = this;
 
             // debounce until resize is over
             setTimeout(function(){
-                if (ticker == self.resizeTicker) {
-                    self.refresh();
+                if (ticker == _this.resizeTicker) {
+                    _this.refresh();
                 }
             }, 500);
         },
 
-        clearProperty: function() {
-            var _this = this;
-
-            this.$el.css(this.property, '');
-            
-            if (this.transform) {
-                $.each(vendorPrefixes, function(i, prefix) {
-                    _this.$el.css(prefix + 'transform', '');
-                });
-            }
-        },
-
         pause: function() {
-            this.paused = true;
-            this.onPause(this.el);
+            this.propertyUpdater.pause();
         },
 
         start: function() {
-            this.paused = false;
-            this.originalVal = this.calculateOriginalVal();
+            this.propertyUpdater.start();
             this.calculatedDelay = this.lastScrollY;
-            this.onStart(this.el);
         },
 
         destroy: function() {
@@ -415,7 +477,7 @@
             this.$win.off('.' + this.id);
 
             // remove inline styles from plugin
-            this.clearProperty();
+            this.propertyUpdater.clearProperty();
 
             // remove data from jQuery el and instance
             $.removeData(this.el, 'plugin_scrollTie');
@@ -426,11 +488,15 @@
         },
 
         refresh: function() {
-            this.clearProperty();
+            this.propertyUpdater.clearProperty();
             this.init();
         }
 
     });
+
+    /*-------------------------------------------- */
+    /** Helpers */
+    /*-------------------------------------------- */
 
     function parse2dTransformMatrix(el) {
         var styles = win.getComputedStyle(el, null);
@@ -463,6 +529,13 @@
             translateX: parseInt(xTranslate),
             translateY: parseInt(yTranslate)
         };
+    }
+
+    function extend(parent, child, methods) {
+        child.prototype = Object.create(parent.prototype);
+        child.prototype.constructor = child;
+
+        $.extend(child.prototype, methods);
     }
 
     /*-------------------------------------------- */
