@@ -6,10 +6,10 @@
 
 This plugin is useful for creating parallax motion or similar effects where a CSS property needs to be incremented on user scroll.  Here are a handful sites currently using ScrollTie (some are using previous versions):
 
-* <a href="http://www.travelandleisure.com/promo/epic-journeys" target="_blank">Travel + Leisure Epic Journeys</a>
-* <a href="http://initiative.com/" target="_blank">Initiative.com - homepage</a>
-* <a href="http://www.drcoolrecovery.com" target="_blank">Dr. Cool Recovery - homepage</a>
-* <a href="http://teacher.scholastic.com/products/classroombooks/ibrary" target="_blank">Scholastic iBrary</a>
+* [Travel + Leisure Epic Journeys](http://www.travelandleisure.com/promo/epic-journeys)
+* [Initiative.com](http://initiative.com/) - homepage
+* [Dr. Cool Recovery](http://www.drcoolrecovery.com) - homepage
+* [Scholastic iBrary](http://teacher.scholastic.com/products/classroombooks/ibrary)
 
 If you're using ScrollTie on a project, please [send us a link](mailto:megan@expandtheroom.com) when it's live so that we can include it here (with permission)!
 
