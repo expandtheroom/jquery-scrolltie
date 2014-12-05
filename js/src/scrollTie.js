@@ -32,15 +32,8 @@
         vendorPrefixCount = vendorPrefixes.length;
 
 
-
-
-
-
-
-
-
     /*-------------------------------------------- */
-    /** Property Objects */
+    /** Property Updaters */
     /*-------------------------------------------- */
     
     function PropertyUpdater(element, opts) {
@@ -75,7 +68,7 @@
         },
 
         _getProperty: function() {
-            return this.property;
+            return this.opts.property;
         },
 
         _getOriginalVal: function() {
@@ -102,6 +95,31 @@
                 this.onStart(this.el);
                 this.stopped = false;
             }
+        },
+
+        _transmuteMoveValue: function(moveValue) {
+            // modify based on direction
+            moveValue = this.reverseDirection ? Number(this.originalVal) - moveValue : Number(this.originalVal) + moveValue;
+            
+            // stop moving at value if specified
+            if (this.stopAtValue !== undefined) {
+                moveValue = this._shouldStop(moveValue) ? this.stopAtValue : moveValue;
+            }
+
+            // if stopped, check for restart
+            if (this.stopped) {
+                this._checkForRestart();
+            }
+
+            return moveValue;
+        },
+
+        _formatJqueryCssVal: function(moveValue) {
+            var val = {};
+
+            val[this.property] = this.propertyValueFormat(moveValue);
+
+            return val;
         },
 
         clearProperty: function() {
@@ -131,26 +149,31 @@
         },
 
         update: function(moveValue) {
-            // modify based on direction
-            moveValue = this.reverseDirection ? Number(this.originalVal) - moveValue : Number(this.originalVal) + moveValue;
-            
-            // stop moving at value if specified
-            if (this.stopAtValue !== undefined) {
-                moveValue = this._shouldStop() ? this.stopAtValue : moveValue;
-            }
+            if (this.paused) return;
 
-            // if stopped, check for restart
-            if (this.stopped) {
-                this._checkForRestart();
-            }
+            moveValue = this._transmuteMoveValue(moveValue);
 
-            this.$el.css(this.property, this.propertyValueFormat(moveValue));
+            this.$el.css(this._formatJqueryCssVal(moveValue));
         }
 
     });
 
     function TransformPropertyUpdater(element, opts) {
         this.transform = opts.property;
+        this.propertyValueFormatMap = {
+            translateX: function(moveValue) {
+                return 'translateX(' + moveValue + 'px)';
+            },
+            translateY: function(moveValue) {
+                return 'translateY(' + moveValue + 'px)';
+            },
+            rotate: function(moveValue) {
+                return 'rotate(' + moveValue + 'deg)';
+            },
+            scale: function(moveValue) {
+                return 'scale(' + moveValue + ')';
+            }
+        };
         
         PropertyUpdater.call(this, element, opts);
         
@@ -159,22 +182,7 @@
 
     extend(PropertyUpdater, TransformPropertyUpdater, {
         _createPropertyValueFormatter: function() {
-            var propertyValueFormatMap = {
-                translateX: function(moveValue) {
-                    return 'translateX(' + moveValue + 'px)';
-                },
-                translateY: function(moveValue) {
-                    return 'translateY(' + moveValue + 'px)';
-                },
-                rotate: function(moveValue) {
-                    return 'rotate(' + moveValue + 'deg)';
-                },
-                scale: function(moveValue) {
-                    return 'scale(' + moveValue + ')';
-                }
-            };
-
-            return propertyValueFormatMap[this.transform];
+            return this.propertyValueFormatMap[this.transform];
         },
 
         _getProperty: function() {
@@ -197,12 +205,26 @@
 
             for (var key in matrixValues) {
 
-                if (matrixValues[key] && key !== this.transform) {
-                    transformValue = transformValue + ' ' + this.propertyValueFormat(matrixValues[key]);
+                if (matrixValues[key] && key != this.transform) {
+                    transformValue = transformValue + ' ' + this.propertyValueFormatMap[key](matrixValues[key]);
                 }
             }
 
             return transformValue;
+        },
+
+        _formatJqueryCssVal: function(moveValue) {
+            moveValue = this.propertyValueFormat((this.transform == 'scale') ? moveValue : Math.floor(moveValue));
+
+            var transformValueWithPrefixes = {
+                transform: this.staticTransformValue + ' ' + moveValue
+            };
+
+            for (var i = 0; i < vendorPrefixCount; i++) {
+                transformValueWithPrefixes[vendorPrefixes[i] + 'transform'] = this.staticTransformValue + ' ' + moveValue;
+            }
+
+            return transformValueWithPrefixes;
         },
 
         clearProperty: function() {
@@ -213,21 +235,8 @@
             });
 
             PropertyUpdater.prototype.clearProperty.call(this);
-        },
-
-        update: function(moveValue) {
-            moveValue = (this.transform == 'scale') ? moveValue : Math.floor(moveValue);
-
-            var transformValueWithPrefixes = {
-                transform: this.staticTransformValue + ' ' + moveValue
-            };
-
-            for (var i = 0; i < vendorPrefixCount; i++) {
-                transformValueWithPrefixes[vendorPrefixes[i] + 'transform'] = this.staticTransformValue + ' ' + moveValue;
-            }
-
-            PropertyUpdater.prototype.update.call(this, this.property, transformValueWithPrefixes);
         }
+
     });
 
     function BgPositionPropertyUpdater(element, opts) {
@@ -277,18 +286,6 @@
 
         return specialPropertiesMap[opts.property] ? new specialPropertiesMap[opts.property](element, opts) : new PropertyUpdater(element, opts);
     }
-
-
-
-
-
-
-
-
-
-
-
-
 
     /*-------------------------------------------- */
     /** ScrollTie */
@@ -545,7 +542,6 @@
     publicGlobalMethods = {
         destroy: function() {
             $.each(allScrollTiedElements, function(i, scrollTie) {
-                console.log(scrollTie);
                 scrollTie.destroy();
             });
         },
