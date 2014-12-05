@@ -21,9 +21,9 @@ npm install scrollTie
 bower install scrollTie
 ```
 **DIY**
+Download or clone repo and include js/dist/scrollTie.min.js (unminified version available as well)
 
-* Download or clone repo and include js/dist/scrollTie.min.js (unminified version available as well)
-* Depends on jQuery - tested with latest stable version 1 and 2
+** ScrollTie depends on jQuery** - if you do not install using a package manager, be sure to include a stable version before the plugin script.  Tested with latest stable version 1 and 2.
 
 ### Usage ###
 
