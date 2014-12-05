@@ -30,7 +30,8 @@ $('.scroll-tied-element').scrollTie({
 #!javaScript
 
 {
-  // STRING (required)
+
+  property: // STRING (required),
   // CSS property or one of the following supported shorthands: 
   // * 'translateX'
   // * 'translateY'
@@ -38,52 +39,50 @@ $('.scroll-tied-element').scrollTie({
   // * 'rotate'
   // * 'backgroundPositionX'
   // * 'backgroundPositionY'
-  property: selector,
 
-  // NUMBER
-  // relative to speed of scroll, where 1 moves *at* speed of scroll, and 2 moves twice as fast as speed of scroll
   speed: [ number: 1 ],
+  // relative to speed of scroll, where 1 moves *at* speed of scroll, and 2 moves twice as fast as speed of scroll
 
-  // when the property is incremented to this value, stop moving element
   stopAtValue: [ number ],
+  // when the property is incremented to this value, stop moving element
 
   reverseDirection: [ boolean: false ],
 
-  // specify how many pixels to delay before beginning to move element.  Can be a number or a function that returns a number
   delay: [ number ] or [ function(element) {} ],
+  // specify how many pixels to delay before beginning to move element.  Can be a number or a function that returns a number
 
-  // provide your own formatting for special properties that are don't have built-in support, such as 3D transforms, or override the format for custom behavior
-  // this function is called on update and should be used with care.  The example below is the built-in propertyValueFormat for transform: translateX().
-  // This function must return a string which will be used as the value of the specified property.
   propertyValueFormat: function(moveValue, element) {
     return 'translateX(' + moveValue + 'px)';
   },
+  // provide your own formatting for special properties that are don't have built-in support, such as 3D transforms, or override the format for custom behavior
+  // this function is called on update and should be used with care.  The example below is the built-in propertyValueFormat for transform: translateX().
+  // This function must return a string which will be used as the value of the specified property.
   
-  // specify a different container that must be visible to animate element
   container: [ selector ],
+  // specify a different container that must be visible to animate element
 
-  // specify an event other than scroll to tie property to (experimental - interested in potential use cases)
   evt: [ event: 'scroll' ],
+  // specify an event other than scroll to tie property to (experimental - interested in potential use cases)
 
+  context: [ selector: window ],
   // specify a scrolling context
-  context: [ selector: window ]
 
+  manualInit: [ boolean: false ],
   // wait for manual call to initialize scrollTie
-  manualInit: [ boolean: false ]
   
   // Callbacks
 
-  // function to call every time element reaches its stopAtValue
   afterStop: function(element) {},
+  // function to call every time element reaches its stopAtValue
 
-  // function to call when element is manually paused
   onPause: function(element) {},
+  // function to call when element is manually paused
 
-  // function to call when element is restarted after it has been paused
   onStart: function(element) {},
+  // function to call when element is restarted after it has been paused
 
-  // function to call when scrollTie instance is destroyed
   onDestroy: function(element) {},
+  // function to call when scrollTie instance is destroyed
 
 }
 ```
