@@ -115,7 +115,7 @@ $('.scroll-tied-element').scrollTie({
 #!javascript
 
 // To affect single instance:
-$('.scrolltie-element').scrollTie('method');
+$('.scroll-tied-element').scrollTie('method');
 
 // To affect all instances:
 $.scrollTie('method');
