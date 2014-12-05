@@ -9,6 +9,7 @@ This plugin is useful for creating parallax motion or similar effects where a CS
 * [Travel + Leisure Epic Journeys](http://www.travelandleisure.com/promo/epic-journeys)
 * [Initiative.com](http://initiative.com/) - homepage
 * [Dr. Cool Recovery](http://www.drcoolrecovery.com) - homepage
+* [Scholastic iBrary](http://teacher.scholastic.com/products/classroombooks/ibrary)
 
 If you're using ScrollTie on a project, please [send us a link](mailto:megan@expandtheroom.com) when it's live so that we can include it here (with permission)!
 
