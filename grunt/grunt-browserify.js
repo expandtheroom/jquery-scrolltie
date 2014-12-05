@@ -4,16 +4,17 @@ module.exports = function(grunt) {
 
         dev: {
             files: {
-                'js/scrollTie.js': ['js/src/plugin.js']
+                'js/dist/scrollTie.js': ['js/src/plugin.js']
             }
         },
 
         prod: {
             options: {
-                transform: ['uglifyify']
+                transform: ['uglifyify'],
+                standalone: 'ScrollTie'
             },
             files: {
-                'js/scrollTie.min.js': ['js/src/plugin.js']
+                'js/dist/scrollTie.min.js': ['js/src/plugin.js']
             }
         }
 
