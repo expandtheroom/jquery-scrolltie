@@ -1,4 +1,44 @@
-var timeoutDelay = 30;
+(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+/*-------------------------------------------- */
+/** Helper to extract real values from         */
+/** 2d Transform Matrix */
+/*-------------------------------------------- */
+
+module.exports = function(el) {
+    var styles = window.getComputedStyle(el, null);
+
+    if (!el || !styles) return;
+
+    var matrixString = styles.getPropertyValue('-webkit-transform') ||
+                       styles.getPropertyValue('-moz-transform') ||
+                       styles.getPropertyValue('-ms-transform') ||
+                       styles.getPropertyValue('-o-transform') ||
+                       styles.getPropertyValue('transform');
+
+    var matrixValues = matrixString.replace(/[matrix\(\)]/g, '').split(',');
+
+    var a = matrixValues[0],
+        b = matrixValues[1],
+        c = matrixValues[2],
+        d = matrixValues[3],
+        xTranslate = matrixValues[4],
+        yTranslate = matrixValues[5];
+
+    var scale = Math.sqrt(a*a + b*b),
+        sin = b/scale;
+
+    var rotation = Math.round(Math.atan2(b, a) * (180/Math.PI));
+
+    return {
+        rotate: parseInt(rotation),
+        scale: scale,
+        translateX: parseInt(xTranslate),
+        translateY: parseInt(yTranslate)
+    };
+};
+},{}],2:[function(require,module,exports){
+var timeoutDelay = 30,
+    parse2dTransformMatrix = require('../../../js/src/helpers/parse2dTransformMatrix');
 
 describe('ScrollTie', function() {
     var element;
@@ -14,7 +54,7 @@ describe('ScrollTie', function() {
     beforeEach(function(done) {
         element = document.createElement('div');
         $('body').append(element);
-        $(element).css({position: 'absolute', top: '0px', position: 'fixed'});
+        $(element).css({position: 'fixed', top: '0px'});
         done();
     })
 
@@ -35,6 +75,32 @@ describe('ScrollTie', function() {
         it('should add scrollTie instance to allScrollTiedElements', function() {
             $(element).scrollTie({ property: 'top' });
             expect($.scrollTie().indexOf($.data(element, 'plugin_scrollTie'))).to.not.equal(-1);
+        })
+
+        describe('property (special cases)', function() {
+
+            it('should handle a transform shorthand', function(done) {
+                $(element).scrollTie({ property: 'translateX' });
+
+                window.scrollTo(0, 500);
+
+                setTimeout(function(){
+                    expect(parse2dTransformMatrix(element).translateX).to.equal(500);
+                    done();
+                }, timeoutDelay);
+            })
+
+            it('should handle a backgroundPosition axis', function(done) {
+                $(element).scrollTie({ property: 'backgroundPositionX', speed: 1 });
+
+                window.scrollTo(0, 500);
+
+                setTimeout(function(){
+                    expect(getComputedStyle(element).backgroundPosition.split(' ')[0]).to.equal('500px');
+                    done();
+                }, timeoutDelay);
+            })
+
         })
 
         describe('stopAtValue option', function() {
@@ -59,7 +125,7 @@ describe('ScrollTie', function() {
                     done();
                     window.scrollTo(0, 0);
                 }, timeoutDelay);
-                
+
             })
 
         })
@@ -145,39 +211,58 @@ describe('ScrollTie', function() {
 
         describe('animateWhenOutOfView option', function() {
 
-            before(function(done) {
-                $(element).css({ position: 'absolute', top: '100px'});
+            beforeEach(function(done) {
+                $(element).css({ position: 'absolute', left: '30px', height: '100px', width: '100px'});
                 done();
             })
 
             describe('default: false', function() {
 
-                it('should increment value from natural delay/offset', function(done) {
-                    done();
+                it('should increment value while element is in view', function(done) {
+                    $(element).scrollTie({ property: 'left' });
+                    
+                    window.scrollTo(0, 199);
+                    
+                    setTimeout(function(){
+                        expect(element.style.left).to.equal('229px');
+                        done();
+                    }, timeoutDelay);
                 })
 
-                it('should stop incrementing value when element is no longer in view', function(done) {
-                    done();
+                it('should return to original value when element is no longer in view, with buffer of 100px', function(done) {                    
+                    $(element).scrollTie({ property: 'left' });
+
+                    window.scrollTo(0, 300);
+                    
+                    setTimeout(function(){
+                        expect(element.style.left).to.equal('30px');
+                        done();
+                        window.scrollTo(0, 0);
+                    }, timeoutDelay);
                 })
             
             })
 
             describe('true', function() {
 
-                it('should not begin incrementing value until element is in view (default offset)', function(done) {
-                    done();
-                })
-
-                it('should increment value from natural delay/offset', function(done) {
+                beforeEach(function(done) {
+                    $(element).css({ position: 'absolute', left: '30px', height: '100px', width: '100px'});
                     done();
                 })
 
                 it('should continue incrementing value when element is no longer in view', function(done) {
-                    done();
+                    $(element).scrollTie({ property: 'left', animateWhenOutOfView: true });
+
+                    window.scrollTo(0, 300);
+                    
+                    setTimeout(function(){
+                        expect(element.style.left).to.equal('330px');
+                        done();
+                        window.scrollTo(0, 0);
+                    }, timeoutDelay);
                 })
             
             })
-
 
         })
 
@@ -347,6 +432,8 @@ describe('ScrollTie', function() {
 
     // methods left to test:
     // 1. refresh
-    // 2. animateWhenOutOfView
+    // 2. Special props: transforms and bgPos
 
 });
+
+},{"../../../js/src/helpers/parse2dTransformMatrix":1}]},{},[2]);

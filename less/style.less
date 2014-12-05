@@ -61,17 +61,17 @@ header {
 .rotate {
     .translateX(-50%);
 }
-.scale {
-    .translateX(80%);
-    .transition(background, 0.25s, ease-in-out);
-
-    &.finished {
-    	background: @brightGreen;
-    }
-}
 .background-position {
-    .translateX(210%);
+    .translateX(80%);
     outline: 1px solid black;
     background: aliceblue url(/img/treeline-sm.png) repeat-x;
     background-size: auto 100%;
+}
+.scale {
+    .translateX(210%);
+    .transition(background, 0.25s, ease-in-out);
+
+    &.finished {
+        background: @brightGreen;
+    }
 }

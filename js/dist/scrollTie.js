@@ -25,7 +25,7 @@ module.exports = function(element, opts) {
 /** Helper to determine if an element is visible */
 /*-------------------------------------------- */
 
-module.exports = function(el, buffer) {
+module.exports = function(el, scrollY, buffer) {
     buffer = buffer || 100;
 
     var win = window,
@@ -39,7 +39,7 @@ module.exports = function(el, buffer) {
     );
 
     var winHeight = win.innerHeight || document.documentElement.clientHeight || document.body.clientHeight,
-        totalScroll = this.lastScrollY + winHeight,
+        totalScroll = scrollY + winHeight,
         elOffsetTop = el.offsetTop,
         elHeight = el.clientHeight;
 
@@ -366,7 +366,7 @@ $.extend(PropertyUpdater.prototype, {
     _formatJqueryCssVal: function(moveValue) {
         var val = {};
 
-        val[this.property] = this.propertyValueFormat(moveValue);
+        val[this.property] = this.propertyValueFormat(moveValue, this.el);
 
         return val;
     },
@@ -390,7 +390,7 @@ $.extend(PropertyUpdater.prototype, {
         this.originalVal = newPosition;
 
         // sets new property value with check for transform/prefix requirements
-        this.$el.css(this.property, this.propertyValueFormat(newPosition));
+        this.$el.css(this._formatJqueryCssVal(newPosition));
     },
 
     reset: function() {
@@ -464,7 +464,9 @@ extend(PropertyUpdater, TransformPropertyUpdater, {
     },
 
     _getSpeed: function() {
-        return this.transform == 'scale' ? this.opts.speed * 0.01 : this.opts.speed;
+        var speed = this.opts.speed || 1;
+
+        return this.transform == 'scale' ? speed * 0.01 : speed;
     },
 
     _getOriginalVal: function() {
@@ -645,7 +647,7 @@ $.extend(ScrollTie.prototype, {
 
     canAnimate: function() {
         var inViewElement = this.container || this.el;
-        var inView = elementIsInView(inViewElement);
+        var inView = elementIsInView(inViewElement, this.lastScrollY);
 
         var cannotAnimate = this.paused || !inView && !this.animateWhenOutOfView && !this.isFixed || this.lastScrollY < this.calculatedDelay;
 

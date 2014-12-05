@@ -54,7 +54,9 @@ extend(PropertyUpdater, TransformPropertyUpdater, {
     },
 
     _getSpeed: function() {
-        return this.transform == 'scale' ? this.opts.speed * 0.01 : this.opts.speed;
+        var speed = this.opts.speed || 1;
+
+        return this.transform == 'scale' ? speed * 0.01 : speed;
     },
 
     _getOriginalVal: function() {

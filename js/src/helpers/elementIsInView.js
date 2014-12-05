@@ -2,7 +2,7 @@
 /** Helper to determine if an element is visible */
 /*-------------------------------------------- */
 
-module.exports = function(el, buffer) {
+module.exports = function(el, scrollY, buffer) {
     buffer = buffer || 100;
 
     var win = window,
@@ -16,7 +16,7 @@ module.exports = function(el, buffer) {
     );
 
     var winHeight = win.innerHeight || document.documentElement.clientHeight || document.body.clientHeight,
-        totalScroll = this.lastScrollY + winHeight,
+        totalScroll = scrollY + winHeight,
         elOffsetTop = el.offsetTop,
         elHeight = el.clientHeight;
 

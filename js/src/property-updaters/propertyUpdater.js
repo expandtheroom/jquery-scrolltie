@@ -113,7 +113,7 @@ $.extend(PropertyUpdater.prototype, {
         this.originalVal = newPosition;
 
         // sets new property value with check for transform/prefix requirements
-        this.$el.css(this.property, this.propertyValueFormat(newPosition, this.el));
+        this.$el.css(this._formatJqueryCssVal(newPosition));
     },
 
     reset: function() {

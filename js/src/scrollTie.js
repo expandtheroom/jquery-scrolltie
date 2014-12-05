@@ -129,7 +129,7 @@ $.extend(ScrollTie.prototype, {
 
     canAnimate: function() {
         var inViewElement = this.container || this.el;
-        var inView = elementIsInView(inViewElement);
+        var inView = elementIsInView(inViewElement, this.lastScrollY);
 
         var cannotAnimate = this.paused || !inView && !this.animateWhenOutOfView && !this.isFixed || this.lastScrollY < this.calculatedDelay;
 

@@ -16,6 +16,12 @@ module.exports = function(grunt) {
             files: {
                 'js/dist/scrollTie.min.js': ['js/src/plugin.js']
             }
+        },
+
+        tests: {
+            files: {
+                'tests/js/testBundle.js': ['tests/js/src/scrollTie-tests.js']
+            }
         }
 
     })
