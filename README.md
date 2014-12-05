@@ -127,9 +127,4 @@ $.scrollTie('method');
 
 ### Contribution guidelines ###
 
-* Writing tests?
-
-### Who do I talk to? ###
-
-* Megan Tong (essentialred)
-* ETR team
+* Log an issue, fork the repo, and create a pull request.  Include Issue # and change details in the commit. ??
