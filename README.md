@@ -55,7 +55,7 @@ $('.scroll-tied-element').scrollTie({
     return 'translateX(' + moveValue + 'px)';
   },
   // provide your own formatting for special properties that are don't have built-in support, such as 3D transforms, or override the format for custom behavior
-  // this function is called on update and should be used with care.  The example below is the built-in propertyValueFormat for transform: translateX().
+  // this function is called on update and should be used with care.  The example above is the built-in propertyValueFormat for transform: translateX().
   // This function must return a string which will be used as the value of the specified property.
   
   container: [ selector ],
