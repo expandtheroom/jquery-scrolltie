@@ -2,7 +2,6 @@
 
 a jQuery plugin that ties a CSS property to user scroll
 
-* Currently working on v1.0
 * Supports modern browsers and IE9+ (could be modified to support IE8 but need seems too small)
 
 ### Get ScrollTie ###
