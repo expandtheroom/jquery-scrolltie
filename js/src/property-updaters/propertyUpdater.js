@@ -89,7 +89,7 @@ $.extend(PropertyUpdater.prototype, {
     _formatJqueryCssVal: function(moveValue) {
         var val = {};
 
-        val[this.property] = this.propertyValueFormat(moveValue);
+        val[this.property] = this.propertyValueFormat(moveValue, this.el);
 
         return val;
     },
@@ -113,7 +113,7 @@ $.extend(PropertyUpdater.prototype, {
         this.originalVal = newPosition;
 
         // sets new property value with check for transform/prefix requirements
-        this.$el.css(this.property, this.propertyValueFormat(newPosition));
+        this.$el.css(this.property, this.propertyValueFormat(newPosition, this.el));
     },
 
     reset: function() {
