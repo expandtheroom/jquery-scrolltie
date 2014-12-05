@@ -1,18 +1,41 @@
 # ScrollTie #
 
-a jQuery plugin that ties a CSS property to user scroll
+###a jQuery plugin that ties a CSS property to scroll###
 
-* Currently working on v1.0
-* Supports modern browsers and IE9+ (could be modified to support IE8 but need seems too small)
+*Supports modern browsers and IE9+ (could be modified to support IE8 but need seems too small)*
+
+This plugin is useful for creating parallax motion or similar effects where a CSS property needs to be incremented on user scroll.  Here are a handful sites currently using ScrollTie (some are using previous versions):
+
+* [Travel + Leisure Epic Journeys](http://www.travelandleisure.com/promo/epic-journeys)
+* [Initiative.com](http://initiative.com/) - homepage
+* [Dr. Cool Recovery](http://www.drcoolrecovery.com) - homepage
+* [Scholastic iBrary](http://teacher.scholastic.com/products/classroombooks/ibrary)
+
+If you're using ScrollTie on a project, please [send us a link](mailto:megan@expandtheroom.com) when it's live so that we can include it here (with permission)!
 
 ### Get ScrollTie ###
 
-* Download or clone repo and include js/dist/scrollTie.min.js (unminified version available as well)
-* Depends on jQuery - tested with latest stable version 1 and 2
+####Via npm (coming soon):####
+```
+#!bash
+
+npm install scrollTie
+```
+####Via bower (coming soon): ####
+
+```
+#!bash
+
+bower install scrollTie
+```
+####DIY####
+Download or clone repo and include js/dist/scrollTie.min.js (unminified version available as well)
+
+** ScrollTie depends on jQuery** - be sure to include a stable version before the plugin script.  Tested with latest stable version 1 and 2.
 
 ### Usage ###
 
-Call scrollTie on any valid jQuery object and pass it options.  The only required option is property, which can point to any incrementable CSS property.  There are supported shorthands for 2D transforms and backgroundPositionX and Y.
+Call scrollTie on any valid jQuery object and pass it options.  The only required option is property, which can point to any increment-able CSS property.  There are supported shorthands for 2D transforms, backgroundPositionX, and backgroundPositionY.
 
 Example:
 ```
@@ -93,7 +116,7 @@ $('.scroll-tied-element').scrollTie({
 #!javascript
 
 // To affect single instance:
-$('.scrolltie-element').scrollTie('method');
+$('.scroll-tied-element').scrollTie('method');
 
 // To affect all instances:
 $.scrollTie('method');
@@ -112,9 +135,4 @@ $.scrollTie('method');
 
 ### Contribution guidelines ###
 
-* Writing tests?
-
-### Who do I talk to? ###
-
-* Megan Tong (essentialred)
-* ETR team
+* Log an issue, fork the repo, and create a pull request.  Include Issue # and change details in the commit. ??
