@@ -31,7 +31,7 @@ $('.scroll-tied-element').scrollTie({
 
 {
 
-  property: // STRING (required),
+  property: STRING (required),
   // CSS property or one of the following supported shorthands: 
   // * 'translateX'
   // * 'translateY'
