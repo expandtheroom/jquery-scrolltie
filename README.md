@@ -99,8 +99,7 @@ $('.scrolltie-element').scrollTie('method');
 $.scrollTie('method');
 
 ```
-## Available methods ## 
-
+**Available methods**
 * pause
 * restart (call after pause to restart single instance or all instances)
 * destroy
