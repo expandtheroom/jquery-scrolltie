@@ -1,8 +1,16 @@
 # ScrollTie #
 
-a jQuery plugin that ties a CSS property to user scroll
+###a jQuery plugin that ties a CSS property to scroll###
 
 * Supports modern browsers and IE9+ (could be modified to support IE8 but need seems too small)
+
+This plugin is useful for creating parallax motion or similar effects where a CSS property needs to be incremented on user scroll.  Here are some examples of this plugin (some using previous versions):
+
+* [Travel + Leisure Epic Journeys](http://www.travelandleisure.com/promo/epic-journeys)
+* [Initiative.com](http://initiative.com/) - homepage
+* [Dr. Cool Recovery](http://www.drcoolrecovery.com) - homepage
+
+If you're currently using ScrollTie, please [send us a link](mailto:megan@expandtheroom.com) so we can include it here!
 
 ### Get ScrollTie ###
 
