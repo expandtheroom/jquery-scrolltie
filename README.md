@@ -7,6 +7,21 @@ a jQuery plugin that ties a CSS property to user scroll
 
 ### Get ScrollTie ###
 
+**Via npm (coming soon):** 
+```
+#!bash
+
+npm install scrollTie
+```
+**Via bower (coming soon) **
+
+```
+#!bash
+
+bower install scrollTie
+```
+**DIY**
+
 * Download or clone repo and include js/dist/scrollTie.min.js (unminified version available as well)
 * Depends on jQuery - tested with latest stable version 1 and 2
 
