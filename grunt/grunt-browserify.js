@@ -1,19 +1,10 @@
 module.exports = function(grunt) {
-    /*-------------------------------------------- */
-    /** Path / File Config */
-    /*-------------------------------------------- */
-    
-    var paths = {
-        src: 'js/src/',
-        vendor: 'js/vendor/',
-        built: 'js/'
-    };
 
     grunt.config.set('browserify', {
 
         dev: {
             files: {
-                'js/scrollTie.js': [paths.src + '**/*.js']
+                'js/scrollTie.js': ['js/src/plugin.js']
             }
         },
 
@@ -22,7 +13,7 @@ module.exports = function(grunt) {
                 transform: ['uglifyify']
             },
             files: {
-                'js/scrollTie.min.js': [paths.src + '**/*.js']
+                'js/scrollTie.min.js': ['js/src/plugin.js']
             }
         }
 
