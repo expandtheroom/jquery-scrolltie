@@ -1,6 +1,13 @@
 {
-  "name": "jquery-scrollTie",
-  "version": "0.1.0",
+  "name": "scrollTie",
+  "version": "1.0.0",
+  "keywords": ["jquery-plugin"],
+  "description": "a jQuery plugin that ties a CSS property to user scroll",
+  "license": "MIT",
+  "author": {
+    "name": "Megan Tong",
+    "email": "megan@expandtheroom.com"
+  },
   "devDependencies": {
     "grunt": "~0.4.1",
     "grunt-browserify": "^3.2.1",

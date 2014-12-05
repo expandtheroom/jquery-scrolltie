@@ -1,0 +1,26 @@
+{
+  "name": "scrollTie",
+  "version": "1.0.0",
+  "authors": [
+    "Megan Tong <megan@expandtheroom.com>"
+  ],
+  "description": "a jQuery plugin that ties a CSS property to scroll",
+  "main": "js/dist/scrollTie.min.js",
+  "moduleType": [
+    "amd",
+    "es6",
+    "globals",
+    "node"
+  ],
+  "keywords": [
+    "jQuery-plugin"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
