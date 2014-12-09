@@ -68,7 +68,7 @@ _number_ (default: 1) Relative to speed of scroll, where 1 moves *at* speed of s
 _number_ When the property is incremented to this value, stop moving element
 
 ### reverseDirection ###
-_boolean_ (default: false)
+_boolean_ (default: false) Decrease property value on scroll.
 
 ### delay ###
 _number_ or _function_ Distance past the bottom of the viewport to wait before beginning to increment property. Functions are passed a reference to the dom element and must return a number.
