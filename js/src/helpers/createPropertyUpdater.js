@@ -5,7 +5,8 @@
 
 var PropertyUpdater = require('../property-updaters/propertyUpdater'),
     TransformPropertyUpdater = require('../property-updaters/transformPropertyUpdater'),
-    BgPositionPropertyUpdater = require('../property-updaters/bgPositionPropertyUpdater');
+    BgPositionPropertyUpdater = require('../property-updaters/bgPositionPropertyUpdater'),
+    OpacityPropertyUpdater = require('../property-updaters/opacityPropertyUpdater');
 
 module.exports = function(element, opts) {
     var specialPropertiesMap = {
@@ -14,7 +15,8 @@ module.exports = function(element, opts) {
         rotate: TransformPropertyUpdater,
         scale: TransformPropertyUpdater,
         backgroundPositionY: BgPositionPropertyUpdater,
-        backgroundPositionX: BgPositionPropertyUpdater
+        backgroundPositionX: BgPositionPropertyUpdater,
+        opacity: OpacityPropertyUpdater
     };
 
     return specialPropertiesMap[opts.property] ? new specialPropertiesMap[opts.property](element, opts) : new PropertyUpdater(element, opts);

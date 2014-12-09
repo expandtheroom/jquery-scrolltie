@@ -35,7 +35,7 @@ $.extend(PropertyUpdater.prototype, {
 
     _createPropertyValueFormatter: function() {
         return function(moveValue) {
-            return moveValue + 'px';
+            return Math.floor(moveValue) + 'px';
         };
     },
 

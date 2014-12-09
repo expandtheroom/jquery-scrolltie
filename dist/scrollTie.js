@@ -6,7 +6,8 @@
 
 var PropertyUpdater = require('../property-updaters/propertyUpdater'),
     TransformPropertyUpdater = require('../property-updaters/transformPropertyUpdater'),
-    BgPositionPropertyUpdater = require('../property-updaters/bgPositionPropertyUpdater');
+    BgPositionPropertyUpdater = require('../property-updaters/bgPositionPropertyUpdater'),
+    OpacityPropertyUpdater = require('../property-updaters/opacityPropertyUpdater');
 
 module.exports = function(element, opts) {
     var specialPropertiesMap = {
@@ -15,12 +16,13 @@ module.exports = function(element, opts) {
         rotate: TransformPropertyUpdater,
         scale: TransformPropertyUpdater,
         backgroundPositionY: BgPositionPropertyUpdater,
-        backgroundPositionX: BgPositionPropertyUpdater
+        backgroundPositionX: BgPositionPropertyUpdater,
+        opacity: OpacityPropertyUpdater
     };
 
     return specialPropertiesMap[opts.property] ? new specialPropertiesMap[opts.property](element, opts) : new PropertyUpdater(element, opts);
 };
-},{"../property-updaters/bgPositionPropertyUpdater":6,"../property-updaters/propertyUpdater":7,"../property-updaters/transformPropertyUpdater":8}],2:[function(require,module,exports){
+},{"../property-updaters/bgPositionPropertyUpdater":6,"../property-updaters/opacityPropertyUpdater":7,"../property-updaters/propertyUpdater":8,"../property-updaters/transformPropertyUpdater":9}],2:[function(require,module,exports){
 /*-------------------------------------------- */
 /** Helper to determine if an element is visible */
 /*-------------------------------------------- */
@@ -234,7 +236,7 @@ module.exports = function(el) {
     };
 
 })(jQuery);
-},{"./scrollTie":9}],6:[function(require,module,exports){
+},{"./scrollTie":10}],6:[function(require,module,exports){
 /*-------------------------------------------- */
 /** Exports */
 /*-------------------------------------------- */
@@ -287,7 +289,47 @@ extend(PropertyUpdater, BgPositionPropertyUpdater, {
         return this.backgroundPositionAxis === 'backgroundPositionY' ? parseInt(bgPosition[1]) : parseInt(bgPosition[0]);
     }
 });
-},{"../helpers/extend":3,"./propertyUpdater":7}],7:[function(require,module,exports){
+},{"../helpers/extend":3,"./propertyUpdater":8}],7:[function(require,module,exports){
+/*-------------------------------------------- */
+/** Exports */
+/*-------------------------------------------- */
+
+module.exports = OpacityPropertyUpdater;
+
+/*-------------------------------------------- */
+/** Requires */
+/*-------------------------------------------- */
+
+var PropertyUpdater = require('./propertyUpdater'),
+    extend = require('../helpers/extend');
+
+/*-------------------------------------------- */
+/** Extends PropertyUpdater with custom login */
+/** required by Opacity
+/*-------------------------------------------- */
+
+function OpacityPropertyUpdater(element, opts) {
+    this.backgroundPositionAxis = opts.property;
+
+    PropertyUpdater.call(this, element, opts);
+
+    this.stopAtValue = this.reverseDirection ? 0 : 1;
+}
+
+extend(PropertyUpdater, OpacityPropertyUpdater, {
+    _createPropertyValueFormatter: function() {
+        return function(moveValue) {
+            return moveValue;
+        };
+    },
+
+    _getSpeed: function() {
+        var speed = this.opts.speed || 1;
+
+        return speed * 0.001;
+    }
+});
+},{"../helpers/extend":3,"./propertyUpdater":8}],8:[function(require,module,exports){
 /*-------------------------------------------- */
 /** Exports */
 /*-------------------------------------------- */
@@ -325,7 +367,7 @@ $.extend(PropertyUpdater.prototype, {
 
     _createPropertyValueFormatter: function() {
         return function(moveValue) {
-            return moveValue + 'px';
+            return Math.floor(moveValue) + 'px';
         };
     },
 
@@ -420,7 +462,7 @@ $.extend(PropertyUpdater.prototype, {
 
 });
 
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 /*-------------------------------------------- */
 /** Exports */
 /*-------------------------------------------- */
@@ -528,7 +570,7 @@ extend(PropertyUpdater, TransformPropertyUpdater, {
 
 });
 
-},{"../helpers/extend":3,"../helpers/parse2dTransformMatrix":4,"./propertyUpdater":7}],9:[function(require,module,exports){
+},{"../helpers/extend":3,"../helpers/parse2dTransformMatrix":4,"./propertyUpdater":8}],10:[function(require,module,exports){
 /*-------------------------------------------- */
 /** Exports */
 /*-------------------------------------------- */
