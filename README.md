@@ -38,12 +38,15 @@ Download or clone repo and include js/dist/scrollTie.min.js (unminified version 
 Call scrollTie on any valid jQuery object and pass it options.  The only required option is property, which can point to any increment-able CSS property.  There are supported shorthands for 2D transforms, backgroundPositionX, and backgroundPositionY.
 
 Example:
+
 ```
-#!javaScript
+#!javascript
 
 $('.scroll-tied-element').scrollTie({
     property: 'translateX'
 })
+
+```
 
 
 ## Options ##
@@ -71,6 +74,7 @@ _boolean_ (default: false)
 _number_ or _function_ Distance past the bottom of the viewport to wait before beginning to increment property. Functions are passed a reference to the dom element and must return a number.
 
 Example:
+
 ```
 #!javascript
 
@@ -88,7 +92,8 @@ _function_ Provide your own formatting for special properties that are don't hav
 
 function(moveValue, element) {
     return 'translateX(' + moveValue + 'px)';
-  },
+}
+
 ```
 
 ### context ###
@@ -103,14 +108,16 @@ _boolean_ (default:false) Wait for manual call to initialize scrollTie
 All callback functions are passed the dom element as an argument.
 
 Format:
+
 ```
-#!javaScript
-  
+#!javascript
+
   function(element) {
     // your callback
   }
-  
+
 ```
+
 
 ### afterStop ###
 _function_ Called every time element reaches its stopAtValue
@@ -137,6 +144,8 @@ $('.scroll-tied-element').scrollTie('method');
 $.scrollTie('method');
 
 ```
+
+
 #### available methods ####
 
 ### init ###
