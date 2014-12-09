@@ -60,6 +60,7 @@ _string_ (required) CSS property or one of the following supported shorthands:
 * 'rotate'
 * 'backgroundPositionX'
 * 'backgroundPositionY'
+* 'opacity'
 
 ### speed ###
 _number_ (default: 1) Relative to speed of scroll, where 1 moves *at* speed of scroll, and 2 moves twice as fast as speed of scroll
