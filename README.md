@@ -177,4 +177,5 @@ Log an issue, fork the repo, and create a pull request.  Include Issue # and cha
 ## Changelog ##
 
 ### v1.0.0 ###
-Initial release.
+
+* Initial release.
