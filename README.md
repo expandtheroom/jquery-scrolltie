@@ -79,7 +79,7 @@ Example:
 #!javascript
 
 function(el) {
-  return $(el).height() * 2;
+    return $(el).height() * 2;
 }
 
 ```
@@ -112,9 +112,9 @@ Format:
 ```
 #!javascript
 
-  function(element) {
+function(element) {
     // your callback
-  }
+}
 
 ```
 
@@ -145,9 +145,6 @@ $.scrollTie('method');
 
 ```
 
-
-#### available methods ####
-
 ### init ###
 Call once if option manualInit is set to true to begin incrementing property value on scroll.
 
@@ -167,7 +164,9 @@ Recalculate offsets, delays, and element positions - useful for when the dom cha
 
 
 ## Testing ##
+
 To test, you will need to run npm install to get test library packages.  Current test suite is located in the tests directory.
+
 
 ## Contribution guidelines ##
 
