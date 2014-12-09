@@ -171,4 +171,10 @@ To test, you will need to run npm install to get test library packages.  Current
 
 ## Contribution guidelines ##
 
-Log an issue, fork the repo, and create a pull request.  Include Issue # and change details in the commit. ??
+Log an issue, fork the repo, and create a pull request.  Include Issue # and change details in the commit.
+
+
+## Changelog ##
+
+### v1.0.0 ###
+Initial release.
