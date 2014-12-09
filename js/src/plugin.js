@@ -47,6 +47,14 @@
             $.each(allScrollTiedElements, function(i, scrollTie) {
                 scrollTie.refresh();
             });
+        },
+
+        init: function() {
+            $.each(allScrollTiedElements, function(i, scrollTie) {
+                if (!scrollTie.isInitialized) {
+                    scrollTie.init();
+                }
+            });
         }
     };
 
@@ -72,6 +80,11 @@
 
         refresh: function() {
             this.refresh();
+            return this.$el;
+        },
+
+        init: function() {
+            if (!this.isInitialized) this.init();
             return this.$el;
         }
     };

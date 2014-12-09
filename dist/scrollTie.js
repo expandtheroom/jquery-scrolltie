@@ -146,6 +146,14 @@ module.exports = function(el) {
             $.each(allScrollTiedElements, function(i, scrollTie) {
                 scrollTie.refresh();
             });
+        },
+
+        init: function() {
+            $.each(allScrollTiedElements, function(i, scrollTie) {
+                if (!scrollTie.isInitialized) {
+                    scrollTie.init();
+                }
+            });
         }
     };
 
@@ -171,6 +179,11 @@ module.exports = function(el) {
 
         refresh: function() {
             this.refresh();
+            return this.$el;
+        },
+
+        init: function() {
+            if (!this.isInitialized) this.init();
             return this.$el;
         }
     };
@@ -544,14 +557,14 @@ function ScrollTie(element, opts, undefined) {
 
     // jquery elements
     this.$el = $(element);
-    this.container = opts.container? this.$el.parents(opts.container)[0] : undefined;
 
     // options
     this.animateWhenOutOfView = opts.animateWhenOutOfView;
     this.delay = opts.delay;
+    this.manualInit = opts.manualInit;
 
     // custom event and context defaults
-    this.evt = opts.evt || 'scroll';
+    this.evt = 'scroll';
     this.context = opts.context || win;
 
     // callback options
@@ -573,7 +586,7 @@ function ScrollTie(element, opts, undefined) {
     this.raf = !!win.requestAnimationFrame;
 
     // auto-initialize if manual option is falsy
-    if (!opts.manualInit) {
+    if (!this.manualInit) {
         this.init();        
     }
 
@@ -584,6 +597,7 @@ $.extend(ScrollTie.prototype, {
     init: function() {
         var _this = this;
 
+        this.isInitialized = true;
         this.propertyUpdater = createPropertyUpdater(this.el, this.options);
 
         // calculated vals
@@ -646,8 +660,7 @@ $.extend(ScrollTie.prototype, {
     },
 
     canAnimate: function() {
-        var inViewElement = this.container || this.el;
-        var inView = elementIsInView(inViewElement, this.lastScrollY);
+        var inView = elementIsInView(this.el, this.lastScrollY);
 
         var cannotAnimate = this.paused || !inView && !this.animateWhenOutOfView && !this.isFixed || this.lastScrollY < this.calculatedDelay;
 
@@ -702,6 +715,9 @@ $.extend(ScrollTie.prototype, {
         // remove data from jQuery el and instance
         $.removeData(this.el, 'plugin_scrollTie');
         list.splice(list.indexOf(this), 1);
+
+        // set initialized status to false
+        this.isInitialized = false;
 
         // call onDestroy option
         this.onDestroy(this.el);
