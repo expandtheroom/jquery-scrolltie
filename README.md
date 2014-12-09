@@ -4,7 +4,7 @@
 
 *Supports modern browsers and IE9+ (could be modified to support IE8 but need seems too small)*
 
-This plugin is useful for creating parallax motion or similar effects where a CSS property needs to be incremented on user scroll.  Here are a handful sites currently using ScrollTie (some are using previous versions):
+This plugin is useful for creating parallax motion or similar effects in which a CSS property needs to be incremented on user scroll.  Here are a handful sites currently using ScrollTie (some are using previous (unreleased) versions):
 
 * [Travel + Leisure Epic Journeys](http://www.travelandleisure.com/promo/epic-journeys)
 * [Initiative.com](http://initiative.com/) - homepage
@@ -13,15 +13,15 @@ This plugin is useful for creating parallax motion or similar effects where a CS
 
 If you're using ScrollTie on a project, please [send us a link](mailto:megan@expandtheroom.com) when it's live so that we can include it here (with permission)!
 
-### Get ScrollTie ###
+## Get ScrollTie ##
 
-####Via npm (coming soon):####
+####Via npm:####
 ```
 #!bash
 
 npm install scrollTie
 ```
-####Via bower (coming soon): ####
+####Via bower: ####
 
 ```
 #!bash
@@ -31,9 +31,9 @@ bower install scrollTie
 ####DIY####
 Download or clone repo and include js/dist/scrollTie.min.js (unminified version available as well)
 
-** ScrollTie depends on jQuery** - be sure to include a stable version before the plugin script.  Tested with latest stable version 1 and 2.
+**ScrollTie depends on jQuery** - be sure to include a stable version before the plugin script.  Tested with latest stable version 1 and 2.
 
-### Usage ###
+## Usage ##
 
 Call scrollTie on any valid jQuery object and pass it options.  The only required option is property, which can point to any increment-able CSS property.  There are supported shorthands for 2D transforms, backgroundPositionX, and backgroundPositionY.
 
@@ -45,70 +45,85 @@ $('.scroll-tied-element').scrollTie({
     property: 'translateX'
 })
 
-```
 
 ## Options ##
 
+### property ###
+_string_ (required) CSS property or one of the following supported shorthands:
+
+* 'translateX'
+* 'translateY'
+* 'scale'
+* 'rotate'
+* 'backgroundPositionX'
+* 'backgroundPositionY'
+
+### speed ###
+_number_ (default: 1) Relative to speed of scroll, where 1 moves *at* speed of scroll, and 2 moves twice as fast as speed of scroll
+
+### stopAtValue ###
+_number_ When the property is incremented to this value, stop moving element
+
+### reverseDirection ###
+_boolean_ (default: false)
+
+### delay ###
+_number_ or _function_ Distance past the bottom of the viewport to wait before beginning to increment property. Functions are passed a reference to the dom element and must return a number.
+
+Example:
 ```
-#!javaScript
+#!javascript
 
-{
+function(el) {
+  return $(el).height() * 2;
+}
 
-  property: STRING (required),
-  // CSS property or one of the following supported shorthands: 
-  // * 'translateX'
-  // * 'translateY'
-  // * 'scale'
-  // * 'rotate'
-  // * 'backgroundPositionX'
-  // * 'backgroundPositionY'
+```
 
-  speed: [ number: 1 ],
-  // relative to speed of scroll, where 1 moves *at* speed of scroll, and 2 moves twice as fast as speed of scroll
+### propertyValueFormat ###
+_function_ Provide your own formatting for special properties that are don't have built-in support, such as 3D transforms, or override the format for custom behavior.  This function is called on update and should be used with care. This function must return a string which will be used as the value of the specified property. The example below is the built-in propertyValueFormat for transform: translateX().
 
-  stopAtValue: [ number ],
-  // when the property is incremented to this value, stop moving element
+```
+#!javascript
 
-  reverseDirection: [ boolean: false ],
-
-  delay: [ number ] or [ function(element) {} ],
-  // specify how many pixels to delay before beginning to move element.  Can be a number or a function that returns a number
-
-  propertyValueFormat: function(moveValue, element) {
+function(moveValue, element) {
     return 'translateX(' + moveValue + 'px)';
   },
-  // provide your own formatting for special properties that are don't have built-in support, such as 3D transforms, or override the format for custom behavior
-  // this function is called on update and should be used with care.  The example above is the built-in propertyValueFormat for transform: translateX().
-  // This function must return a string which will be used as the value of the specified property.
-  
-  container: [ selector ],
-  // specify a different container that must be visible to animate element
-
-  evt: [ event: 'scroll' ],
-  // specify an event other than scroll to tie property to (experimental - interested in potential use cases)
-
-  context: [ selector: window ],
-  // specify a scrolling context
-
-  manualInit: [ boolean: false ],
-  // wait for manual call to initialize scrollTie
-  
-  // Callbacks
-
-  afterStop: function(element) {},
-  // function to call every time element reaches its stopAtValue
-
-  onPause: function(element) {},
-  // function to call when element is manually paused
-
-  onStart: function(element) {},
-  // function to call when element is restarted after it has been paused
-
-  onDestroy: function(element) {},
-  // function to call when scrollTie instance is destroyed
-
-}
 ```
+
+### context ###
+_selector_ (default: window) Specify a scrolling context
+
+### manualInit ###
+_boolean_ (default:false) Wait for manual call to initialize scrollTie
+  
+
+## Callbacks ##
+
+All callback functions are passed the dom element as an argument.
+
+Format:
+```
+#!javaScript
+  
+  function(element) {
+    // your callback
+  }
+  
+```
+
+### afterStop ###
+_function_ Called every time element reaches its stopAtValue
+
+### onPause ###
+_function_ Called when element is manually paused
+
+### onStart ###
+_function_ Called when element is restarted after it has been paused
+
+### onDestroy ###
+_function_ Called when scrollTie instance is destroyed
+
 
 ### Public Methods ###
 
@@ -122,17 +137,29 @@ $('.scroll-tied-element').scrollTie('method');
 $.scrollTie('method');
 
 ```
-**Available methods**
+#### available methods ####
 
-* pause
-* restart (call after pause to restart single instance or all instances)
-* destroy
-* refresh (recalculate offsets, delays, and element positions - useful for when the dom changes asynchronously.  called internally on window resize)
+### init ###
+Call once if option manualInit is set to true to begin incrementing property value on scroll.
+
+### pause ###
+Call pause to temporarily stop incrementing property value. You must call $('.scroll-tied-element').scrollTie('restart') to continue incrementing.
+
+### restart ###
+Call restart after pause to begin incrementing again.
+
+** NOTE: Pause and Restart will take elements out of the flow so that they will not necessarily end back where they began.  Use with care! **
+
+### destroy ###
+Destroys and removes all plugin data.
+
+### refresh ###
+Recalculate offsets, delays, and element positions - useful for when the dom changes asynchronously.  This is called internally on window resize.
 
 
-### Testing ###
-* To test, you will need to run npm install to get test library packages.  Current test suite is located in the tests directory.
+## Testing ##
+To test, you will need to run npm install to get test library packages.  Current test suite is located in the tests directory.
 
-### Contribution guidelines ###
+## Contribution guidelines ##
 
-* Log an issue, fork the repo, and create a pull request.  Include Issue # and change details in the commit. ??
+Log an issue, fork the repo, and create a pull request.  Include Issue # and change details in the commit. ??
