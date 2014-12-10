@@ -38,7 +38,7 @@ module.exports = function(el) {
 };
 },{}],2:[function(require,module,exports){
 var timeoutDelay = 30,
-    parse2dTransformMatrix = require('../../../js/src/helpers/parse2dTransformMatrix');
+    parse2dTransformMatrix = require('../../../src/helpers/parse2dTransformMatrix');
 
 describe('ScrollTie', function() {
     var element;
@@ -436,4 +436,4 @@ describe('ScrollTie', function() {
 
 });
 
-},{"../../../js/src/helpers/parse2dTransformMatrix":1}]},{},[2]);
+},{"../../../src/helpers/parse2dTransformMatrix":1}]},{},[2]);

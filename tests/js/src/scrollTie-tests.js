@@ -1,5 +1,5 @@
 var timeoutDelay = 30,
-    parse2dTransformMatrix = require('../../../js/src/helpers/parse2dTransformMatrix');
+    parse2dTransformMatrix = require('../../../src/helpers/parse2dTransformMatrix');
 
 describe('ScrollTie', function() {
     var element;

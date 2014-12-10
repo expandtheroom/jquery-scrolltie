@@ -4,7 +4,7 @@ module.exports = function(grunt) {
 
         dev: {
             files: {
-                'dist/scrollTie.js': ['js/src/plugin.js']
+                'dist/scrollTie.js': ['src/plugin.js']
             }
         },
 
@@ -14,7 +14,7 @@ module.exports = function(grunt) {
                 standalone: 'ScrollTie'
             },
             files: {
-                'dist/scrollTie.min.js': ['js/src/plugin.js']
+                'dist/scrollTie.min.js': ['src/plugin.js']
             }
         },
 
