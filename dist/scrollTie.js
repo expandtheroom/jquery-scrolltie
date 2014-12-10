@@ -1,29 +1,5 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /*-------------------------------------------- */
-/** Simple Factory to create PropertyUpdaters */
-/** Add more as special support is needed
-/*-------------------------------------------- */
-
-var PropertyUpdater = require('../property-updaters/propertyUpdater'),
-    TransformPropertyUpdater = require('../property-updaters/transformPropertyUpdater'),
-    BgPositionPropertyUpdater = require('../property-updaters/bgPositionPropertyUpdater'),
-    OpacityPropertyUpdater = require('../property-updaters/opacityPropertyUpdater');
-
-module.exports = function(element, opts) {
-    var specialPropertiesMap = {
-        translateY: TransformPropertyUpdater,
-        translateX: TransformPropertyUpdater,
-        rotate: TransformPropertyUpdater,
-        scale: TransformPropertyUpdater,
-        backgroundPositionY: BgPositionPropertyUpdater,
-        backgroundPositionX: BgPositionPropertyUpdater,
-        opacity: OpacityPropertyUpdater
-    };
-
-    return specialPropertiesMap[opts.property] ? new specialPropertiesMap[opts.property](element, opts) : new PropertyUpdater(element, opts);
-};
-},{"../property-updaters/bgPositionPropertyUpdater":6,"../property-updaters/opacityPropertyUpdater":7,"../property-updaters/propertyUpdater":8,"../property-updaters/transformPropertyUpdater":9}],2:[function(require,module,exports){
-/*-------------------------------------------- */
 /** Helper to determine if an element is visible */
 /*-------------------------------------------- */
 
@@ -49,7 +25,7 @@ module.exports = function(el, scrollY, buffer) {
 
     return isInView;
 };
-},{}],3:[function(require,module,exports){
+},{}],2:[function(require,module,exports){
 /*-------------------------------------------- */
 /** Helper to use Object.create with $.extend */
 /*-------------------------------------------- */
@@ -60,7 +36,7 @@ module.exports = function(parent, child, methods) {
 
     $.extend(child.prototype, methods);
 };
-},{}],4:[function(require,module,exports){
+},{}],3:[function(require,module,exports){
 /*-------------------------------------------- */
 /** Helper to extract real values from         */
 /** 2d Transform Matrix */
@@ -98,7 +74,7 @@ module.exports = function(el) {
         translateY: parseInt(yTranslate)
     };
 };
-},{}],5:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 /**
  * ScrollTie: Ties a CSS property to user scroll (common use is Parallax animation)
  */
@@ -236,7 +212,7 @@ module.exports = function(el) {
     };
 
 })(jQuery);
-},{"./scrollTie":10}],6:[function(require,module,exports){
+},{"./scrollTie":10}],5:[function(require,module,exports){
 /*-------------------------------------------- */
 /** Exports */
 /*-------------------------------------------- */
@@ -289,7 +265,7 @@ extend(PropertyUpdater, BgPositionPropertyUpdater, {
         return this.backgroundPositionAxis === 'backgroundPositionY' ? parseInt(bgPosition[1]) : parseInt(bgPosition[0]);
     }
 });
-},{"../helpers/extend":3,"./propertyUpdater":8}],7:[function(require,module,exports){
+},{"../helpers/extend":2,"./propertyUpdater":7}],6:[function(require,module,exports){
 /*-------------------------------------------- */
 /** Exports */
 /*-------------------------------------------- */
@@ -329,7 +305,7 @@ extend(PropertyUpdater, OpacityPropertyUpdater, {
         return speed * 0.001;
     }
 });
-},{"../helpers/extend":3,"./propertyUpdater":8}],8:[function(require,module,exports){
+},{"../helpers/extend":2,"./propertyUpdater":7}],7:[function(require,module,exports){
 /*-------------------------------------------- */
 /** Exports */
 /*-------------------------------------------- */
@@ -462,7 +438,31 @@ $.extend(PropertyUpdater.prototype, {
 
 });
 
-},{}],9:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
+/*-------------------------------------------- */
+/** Simple Factory to create PropertyUpdaters */
+/** Add more as special support is needed
+/*-------------------------------------------- */
+
+var PropertyUpdater = require('./propertyUpdater'),
+    TransformPropertyUpdater = require('./transformPropertyUpdater'),
+    BgPositionPropertyUpdater = require('./bgPositionPropertyUpdater'),
+    OpacityPropertyUpdater = require('./opacityPropertyUpdater');
+
+module.exports.create = function(element, opts) {
+    var specialPropertiesMap = {
+        translateY: TransformPropertyUpdater,
+        translateX: TransformPropertyUpdater,
+        rotate: TransformPropertyUpdater,
+        scale: TransformPropertyUpdater,
+        backgroundPositionY: BgPositionPropertyUpdater,
+        backgroundPositionX: BgPositionPropertyUpdater,
+        opacity: OpacityPropertyUpdater
+    };
+
+    return specialPropertiesMap[opts.property] ? new specialPropertiesMap[opts.property](element, opts) : new PropertyUpdater(element, opts);
+};
+},{"./bgPositionPropertyUpdater":5,"./opacityPropertyUpdater":6,"./propertyUpdater":7,"./transformPropertyUpdater":9}],9:[function(require,module,exports){
 /*-------------------------------------------- */
 /** Exports */
 /*-------------------------------------------- */
@@ -570,7 +570,7 @@ extend(PropertyUpdater, TransformPropertyUpdater, {
 
 });
 
-},{"../helpers/extend":3,"../helpers/parse2dTransformMatrix":4,"./propertyUpdater":8}],10:[function(require,module,exports){
+},{"../helpers/extend":2,"../helpers/parse2dTransformMatrix":3,"./propertyUpdater":7}],10:[function(require,module,exports){
 /*-------------------------------------------- */
 /** Exports */
 /*-------------------------------------------- */
@@ -581,7 +581,7 @@ module.exports = ScrollTie;
 /** Requires */
 /*-------------------------------------------- */
 
-var createPropertyUpdater = require('./helpers/createPropertyUpdater'),
+var propertyUpdaterFactory = require('./propertyUpdaters/propertyUpdaterFactory'),
     elementIsInView = require('./helpers/elementIsInView');
 
 /*-------------------------------------------- */
@@ -640,7 +640,7 @@ $.extend(ScrollTie.prototype, {
         var _this = this;
 
         this.isInitialized = true;
-        this.propertyUpdater = createPropertyUpdater(this.el, this.options);
+        this.propertyUpdater = propertyUpdaterFactory.create(this.el, this.options);
 
         // calculated vals
         this.isFixed = this.$el.css('position') == 'fixed';
@@ -771,4 +771,4 @@ $.extend(ScrollTie.prototype, {
     }
 
 });
-},{"./helpers/createPropertyUpdater":1,"./helpers/elementIsInView":2}]},{},[5]);
+},{"./helpers/elementIsInView":1,"./propertyUpdaters/propertyUpdaterFactory":8}]},{},[4]);

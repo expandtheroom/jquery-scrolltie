@@ -8,7 +8,7 @@ module.exports = ScrollTie;
 /** Requires */
 /*-------------------------------------------- */
 
-var createPropertyUpdater = require('./helpers/createPropertyUpdater'),
+var propertyUpdaterFactory = require('./propertyUpdaters/propertyUpdaterFactory'),
     elementIsInView = require('./helpers/elementIsInView');
 
 /*-------------------------------------------- */
@@ -67,7 +67,7 @@ $.extend(ScrollTie.prototype, {
         var _this = this;
 
         this.isInitialized = true;
-        this.propertyUpdater = createPropertyUpdater(this.el, this.options);
+        this.propertyUpdater = propertyUpdaterFactory.create(this.el, this.options);
 
         // calculated vals
         this.isFixed = this.$el.css('position') == 'fixed';

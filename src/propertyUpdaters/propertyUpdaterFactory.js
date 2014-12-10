@@ -3,12 +3,12 @@
 /** Add more as special support is needed
 /*-------------------------------------------- */
 
-var PropertyUpdater = require('../property-updaters/propertyUpdater'),
-    TransformPropertyUpdater = require('../property-updaters/transformPropertyUpdater'),
-    BgPositionPropertyUpdater = require('../property-updaters/bgPositionPropertyUpdater'),
-    OpacityPropertyUpdater = require('../property-updaters/opacityPropertyUpdater');
+var PropertyUpdater = require('./propertyUpdater'),
+    TransformPropertyUpdater = require('./transformPropertyUpdater'),
+    BgPositionPropertyUpdater = require('./bgPositionPropertyUpdater'),
+    OpacityPropertyUpdater = require('./opacityPropertyUpdater');
 
-module.exports = function(element, opts) {
+module.exports.create = function(element, opts) {
     var specialPropertiesMap = {
         translateY: TransformPropertyUpdater,
         translateX: TransformPropertyUpdater,
