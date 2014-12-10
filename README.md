@@ -38,12 +38,15 @@ Download or clone repo and include js/dist/scrollTie.min.js (unminified version 
 Call scrollTie on any valid jQuery object and pass it options.  The only required option is property, which can point to any increment-able CSS property.  There are supported shorthands for 2D transforms, backgroundPositionX, and backgroundPositionY.
 
 Example:
+
 ```
-#!javaScript
+#!javascript
 
 $('.scroll-tied-element').scrollTie({
     property: 'translateX'
 })
+
+```
 
 
 ## Options ##
@@ -57,6 +60,7 @@ _string_ (required) CSS property or one of the following supported shorthands:
 * 'rotate'
 * 'backgroundPositionX'
 * 'backgroundPositionY'
+* 'opacity'
 
 ### speed ###
 _number_ (default: 1) Relative to speed of scroll, where 1 moves *at* speed of scroll, and 2 moves twice as fast as speed of scroll
@@ -65,17 +69,18 @@ _number_ (default: 1) Relative to speed of scroll, where 1 moves *at* speed of s
 _number_ When the property is incremented to this value, stop moving element
 
 ### reverseDirection ###
-_boolean_ (default: false)
+_boolean_ (default: false) Decrease property value on scroll.
 
 ### delay ###
 _number_ or _function_ Distance past the bottom of the viewport to wait before beginning to increment property. Functions are passed a reference to the dom element and must return a number.
 
 Example:
+
 ```
 #!javascript
 
 function(el) {
-  return $(el).height() * 2;
+    return $(el).height() * 2;
 }
 
 ```
@@ -88,7 +93,8 @@ _function_ Provide your own formatting for special properties that are don't hav
 
 function(moveValue, element) {
     return 'translateX(' + moveValue + 'px)';
-  },
+}
+
 ```
 
 ### context ###
@@ -103,14 +109,16 @@ _boolean_ (default:false) Wait for manual call to initialize scrollTie
 All callback functions are passed the dom element as an argument.
 
 Format:
+
 ```
-#!javaScript
-  
-  function(element) {
+#!javascript
+
+function(element) {
     // your callback
-  }
-  
+}
+
 ```
+
 
 ### afterStop ###
 _function_ Called every time element reaches its stopAtValue
@@ -137,7 +145,6 @@ $('.scroll-tied-element').scrollTie('method');
 $.scrollTie('method');
 
 ```
-#### available methods ####
 
 ### init ###
 Call once if option manualInit is set to true to begin incrementing property value on scroll.
@@ -158,8 +165,17 @@ Recalculate offsets, delays, and element positions - useful for when the dom cha
 
 
 ## Testing ##
+
 To test, you will need to run npm install to get test library packages.  Current test suite is located in the tests directory.
+
 
 ## Contribution guidelines ##
 
-Log an issue, fork the repo, and create a pull request.  Include Issue # and change details in the commit. ??
+Log an issue, fork the repo, and create a pull request.  Include Issue # and change details in the commit.
+
+
+## Changelog ##
+
+### v1.0.0 ###
+
+* Initial release.
