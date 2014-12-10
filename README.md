@@ -17,15 +17,11 @@ If you're using ScrollTie on a project, please [send us a link](mailto:megan@exp
 
 ####Via npm:####
 ```
-#!bash
-
 npm install scrollTie
 ```
 ####Via bower: ####
 
 ```
-#!bash
-
 bower install scrollTie
 ```
 ####DIY####
@@ -40,8 +36,6 @@ Call scrollTie on any valid jQuery object and pass it options.  The only require
 Example:
 
 ```
-#!javascript
-
 $('.scroll-tied-element').scrollTie({
     property: 'translateX'
 })
@@ -77,8 +71,6 @@ _number_ or _function_ Distance past the bottom of the viewport to wait before b
 Example:
 
 ```
-#!javascript
-
 function(el) {
     return $(el).height() * 2;
 }
@@ -89,8 +81,6 @@ function(el) {
 _function_ Provide your own formatting for special properties that are don't have built-in support, such as 3D transforms, or override the format for custom behavior.  This function is called on update and should be used with care. This function must return a string which will be used as the value of the specified property. The example below is the built-in propertyValueFormat for transform: translateX().
 
 ```
-#!javascript
-
 function(moveValue, element) {
     return 'translateX(' + moveValue + 'px)';
 }
@@ -111,7 +101,6 @@ All callback functions are passed the dom element as an argument.
 Format:
 
 ```
-#!javascript
 
 function(element) {
     // your callback
@@ -136,7 +125,6 @@ _function_ Called when scrollTie instance is destroyed
 ### Public Methods ###
 
 ```
-#!javascript
 
 // To affect single instance:
 $('.scroll-tied-element').scrollTie('method');
