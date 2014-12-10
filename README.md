@@ -11,7 +11,7 @@ This plugin is useful for creating parallax motion or similar effects in which a
 * [Dr. Cool Recovery](http://www.drcoolrecovery.com) - homepage
 * [Scholastic iBrary](http://teacher.scholastic.com/products/classroombooks/ibrary)
 
-If you're using ScrollTie on a project, please [send us a link](mailto:megan@expandtheroom.com) when it's live so that we can include it here (with permission)!
+If you're using ScrollTie on a project, please email megan@expandtheroom.com when it's live so that we can include it here (with permission)!
 
 ## Get ScrollTie ##
 
