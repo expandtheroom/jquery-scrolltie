@@ -17,12 +17,12 @@ If you're using ScrollTie on a project, please email megan@expandtheroom.com whe
 
 ####Via npm:####
 ```
-npm install scrollTie
+npm install jquery-scrolltie
 ```
 ####Via bower: ####
 
 ```
-bower install scrollTie
+bower install jquery-scrolltie
 ```
 ####DIY####
 Download or clone repo and include js/dist/scrollTie.min.js (unminified version available as well)
