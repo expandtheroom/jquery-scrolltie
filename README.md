@@ -156,6 +156,7 @@ Recalculate offsets, delays, and element positions - useful for when the dom cha
 
 To test, you will need to run npm install to get test library packages.  Current test suite is located in the tests directory.
 
+Open the `tests/index.html` file in your web browser to run the tests.
 
 ## Contribution guidelines ##
 
