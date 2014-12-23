@@ -3,6 +3,11 @@ module.exports = function(grunt) {
     grunt.config.set('browserify', {
 
         dev: {
+            options: {
+              browserifyOptions: {
+                  standalone: 'ScrollTie'
+              },
+            },
             files: {
                 'dist/scrollTie.js': ['src/plugin.js']
             }
@@ -11,7 +16,9 @@ module.exports = function(grunt) {
         prod: {
             options: {
                 transform: ['uglifyify'],
-                standalone: 'ScrollTie'
+                browserifyOptions: {
+                    standalone: 'ScrollTie'
+                }
             },
             files: {
                 'dist/scrollTie.min.js': ['src/plugin.js']
@@ -19,8 +26,17 @@ module.exports = function(grunt) {
         },
 
         tests: {
+            options: {
+              browserifyOptions: {
+                debug: true
+              }
+            },
             files: {
-                'tests/js/testBundle.js': ['tests/js/src/scrollTie-tests.js']
+                'tests/js/testBundle.js': [
+                  'tests/js/setup.js',
+                  'tests/js/src/scrollTie-tests.js',
+                  'tests/js/runner.js'
+                ]
             }
         }
 
