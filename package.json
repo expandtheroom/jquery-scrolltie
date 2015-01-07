@@ -4,6 +4,7 @@
   "keywords": ["jquery-plugin"],
   "description": "a jQuery plugin that ties a CSS property to user scroll",
   "license": "MIT",
+  "main": "src/plugin.js",
   "author": {
     "name": "Megan Tong",
     "email": "megan@expandtheroom.com"
