@@ -5,28 +5,17 @@
         <title>ScrollTie | Unit Tests</title>
         <meta name="apple-mobile-web-app-capable" content="yes">
         <meta name="viewport" content="width=1280, initial-scale=1">
-        <link rel="stylesheet" href="/node_modules/mocha/mocha.css" type="text/css">
+        <link rel="stylesheet" href="../node_modules/mocha/mocha.css" type="text/css">
     </head>
     <body>
-        <div id="mocha">
-        </div>
+        <div id="mocha"></div>
 
-        <script src="/node_modules/jquery/dist/jquery.min.js"></script>
-        <script src="/dist/scrollTie.min.js"></script>
-        <script src="/node_modules/chai/chai.js"></script>
-        <script src="/node_modules/sinon-chai/lib/sinon-chai.js"></script>
-        <script src="/node_modules/sinon/pkg/sinon-1.12.1.js"></script>
-        <script src="/node_modules/mocha/mocha.js"></script>
-        <script>
-            mocha.setup('bdd');
-            expect = chai.expect;
-            assert = chai.assert;
-        </script>
+        <script src="../node_modules/jquery/dist/jquery.min.js"></script>
+        <script src="../dist/scrollTie.min.js"></script>
+        <script src="../node_modules/chai/chai.js"></script>
+        <script src="../node_modules/sinon-chai/lib/sinon-chai.js"></script>
+        <script src="../node_modules/sinon/pkg/sinon-1.12.1.js"></script>
+        <script src="../node_modules/mocha/mocha.js"></script>
         <script src="js/testBundle.js"></script>
-        <script>
-            mocha.checkLeaks();
-            mocha.globals(['jQuery*', 'requestAnimationFrame', 'sinon']);
-            mocha.run();
-        </script>
     </body>
 </html>

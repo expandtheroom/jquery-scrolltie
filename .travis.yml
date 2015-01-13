@@ -6,3 +6,32 @@ env:
   global:
   - secure: MDPiZm12iyjfsvkih2iOEeiNL9vxnMJZHSi9cQVydUb4atMtij6w3VKCsQ7Qmlcv4z2KExoLjTSvLUly9yUEMhzKM2D6s7sBW4xBR4i3AfF0/imE2M5QQ262Zjejcz/BQui3RG10vh1nQVS2xszlQsJdNjqmvXU8BCYQz6lDEs4=
   - secure: fHVKARRYr6y84bLJlZI6q6X4EQSKWsL+3Ts6UxCJM2KqcIyB7JFYK/sDnN7dgyEGfOQuY7Mh2YiMApVIPueUhhUxCsalRDe+7TFDnQLO6n0NShF6T8UaKPN45jFfeDc3/6MLdogtVTSVedzN/wDkL0GYn0b1EoKcs2QVhq5z/rI=
+before_install:
+- "npm install -g npm@~1.4.6"
+- "sudo apt-get update -qq"
+- "sudo apt-get remove chromium-browser"
+- "echo ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true | sudo debconf-set-selections"
+- "sudo apt-get install ttf-mscorefonts-installer"
+- "sudo apt-get install x-ttcidfont-conf"
+- "sudo mkfontdir"
+- "sudo apt-get install defoma libgl1-mesa-dri xfonts-100dpi xfonts-75dpi xfonts-scalable xfonts-cyrillic libappindicator1"
+- "wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb"
+- "sudo mkdir -p /usr/share/desktop-directories"
+- "sudo dpkg -i google-chrome-stable_current_amd64.deb"
+- "sudo apt-get install -f"
+- "sudo dpkg -i google-chrome-stable_current_amd64.deb"
+- "export CHROME_SANDBOX=/opt/google/chrome/chrome-sandbox"
+- "sudo rm -f $CHROME_SANDBOX"
+- "sudo wget https://googledrive.com/host/0B5VlNZ_Rvdw6NTJoZDBSVy1ZdkE -O $CHROME_SANDBOX"
+- "sudo chown root:root $CHROME_SANDBOX; sudo chmod 4755 $CHROME_SANDBOX"
+- "sudo md5sum $CHROME_SANDBOX"
+- "sudo chmod 1777 /dev/shm"
+- "export DISPLAY=:99.0"
+- "sh -e /etc/init.d/xvfb start"
+before_script:
+- npm install -g grunt-cli
+script:
+- grunt browserify karma:firefox karma:chrome
+branches:
+  only:
+  - master

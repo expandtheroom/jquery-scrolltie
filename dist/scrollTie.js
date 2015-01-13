@@ -1,4 +1,4 @@
-(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+!function(e){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=e();else if("function"==typeof define&&define.amd)define([],e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.ScrollTie=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /*-------------------------------------------- */
 /** Helper to determine if an element is visible */
 /*-------------------------------------------- */
@@ -85,13 +85,13 @@ module.exports = function(el) {
     /*-------------------------------------------- */
     /** Requires */
     /*-------------------------------------------- */
-    
+
     var ScrollTie = require('./scrollTie');
 
     /*-------------------------------------------- */
     /** Variables */
     /*-------------------------------------------- */
-    
+
     var allScrollTiedElements = [],
         scrollTiedElementCounter = 0,
         publicGlobalMethods,
@@ -100,7 +100,7 @@ module.exports = function(el) {
     /*-------------------------------------------- */
     /** Methods to Expose on jQuery */
     /*-------------------------------------------- */
-    
+
     publicGlobalMethods = {
         destroy: function() {
             $.each(allScrollTiedElements, function(i, scrollTie) {
@@ -138,7 +138,7 @@ module.exports = function(el) {
     /*-------------------------------------------- */
     /** Methods to Expose on jQuery object of Element */
     /*-------------------------------------------- */
-    
+
     publicInstanceMethods = {
         destroy: function() {
             this.destroy(allScrollTiedElements);
@@ -212,6 +212,7 @@ module.exports = function(el) {
     };
 
 })(jQuery);
+
 },{"./scrollTie":10}],5:[function(require,module,exports){
 /*-------------------------------------------- */
 /** Exports */
@@ -629,13 +630,13 @@ function ScrollTie(element, opts, undefined) {
 
     // auto-initialize if manual option is falsy
     if (!this.manualInit) {
-        this.init();        
+        this.init();
     }
 
 }
 
 $.extend(ScrollTie.prototype, {
-    
+
     init: function() {
         var _this = this;
 
@@ -647,7 +648,10 @@ $.extend(ScrollTie.prototype, {
         this.calculatedDelay = this.calculateDelay();
 
         // call animate to position things
-        if (this.canAnimate()) this.animate();
+        var animate = this.canAnimate() ? this.animate() :
+
+        // allows a plugin to know when the initial animation is finished
+        this.promise = this.canAnimate() ? this.animate() : $.Deferred().resolve();
 
         // always listen to the specified event
         this.$context.on(this.evt + '.' + this.id, this.scrollHandler.bind(this));
@@ -679,7 +683,7 @@ $.extend(ScrollTie.prototype, {
         if (!this.raf) {
             this.animate();
             return;
-        } 
+        }
 
         // use raf if possible to request animation frame
         if (!this.isQueued) {
@@ -692,7 +696,7 @@ $.extend(ScrollTie.prototype, {
         this.isQueued = false;
 
         if (!this.lastFrameWasAnimated) this.propertyUpdater.onStart(this.el);
-        
+
         var moveValue = this.calculateMoveValue();
 
         // sets new property value with check for transform/prefix requirements
@@ -771,4 +775,6 @@ $.extend(ScrollTie.prototype, {
     }
 
 });
-},{"./helpers/elementIsInView":1,"./propertyUpdaters/propertyUpdaterFactory":8}]},{},[4]);
+
+},{"./helpers/elementIsInView":1,"./propertyUpdaters/propertyUpdaterFactory":8}]},{},[4])(4)
+});

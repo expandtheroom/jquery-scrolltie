@@ -78,7 +78,7 @@ describe('ScrollTie', function() {
             })
 
             it('should not increment property higher than stopAtValue', function(done) {
-                $(element).scrollTie({ property: 'top', stopAtValue: 500 }); 
+                $(element).scrollTie({ property: 'top', stopAtValue: 500 });
                 window.scrollTo(0, 501);
 
                 setTimeout(function(){
@@ -96,9 +96,9 @@ describe('ScrollTie', function() {
             it('should decrement position', function(done) {
                 $(element).css({top: '500px'});
                 $(element).scrollTie({ property: 'top', reverseDirection: true });
-                
+
                 window.scrollTo(0, 500);
-                
+
                 setTimeout(function(){
                     expect(element.style.top).to.equal('0px');
                     done();
@@ -113,7 +113,7 @@ describe('ScrollTie', function() {
 
             it('should not increment property when scroll is less than delay (px value)', function(done) {
                 $(element).scrollTie({ property: 'top', delay: 500 });
-                
+
                 window.scrollTo(0, 500);
 
                 setTimeout(function(){
@@ -128,9 +128,9 @@ describe('ScrollTie', function() {
                 $(element).scrollTie({ property: 'top', delay: function(el) {
                     return 500;
                 } });
-                
+
                 window.scrollTo(0, 500);
-                
+
                 setTimeout(function(){
                     expect(element.style.top).to.equal('0px');
                     done();
@@ -141,7 +141,7 @@ describe('ScrollTie', function() {
             it('should begin incrementing property when scroll position is greater than delay', function(done) {
                 $(element).scrollTie({ property: 'top', delay: 500});
                 $(element).css({position: 'absolute'});
-                
+
                 window.scrollTo(0, 501);
 
                 setTimeout(function(){
@@ -158,9 +158,9 @@ describe('ScrollTie', function() {
             it('should increment position at correct speed', function(done) {
                 $(element).scrollTie({ property: 'top', speed: 2 });
                 $(element).css({position: 'absolute'});
-                
+
                 window.scrollTo(0, 500);
-                
+
                 setTimeout(function(){
                     expect(element.style.top).to.equal('1000px');
                     done();
@@ -181,27 +181,27 @@ describe('ScrollTie', function() {
 
                 it('should increment value while element is in view', function(done) {
                     $(element).scrollTie({ property: 'left' });
-                    
+
                     window.scrollTo(0, 199);
-                    
+
                     setTimeout(function(){
                         expect(element.style.left).to.equal('229px');
                         done();
                     }, timeoutDelay);
                 })
 
-                it('should return to original value when element is no longer in view, with buffer of 100px', function(done) {                    
+                it('should return to original value when element is no longer in view, with buffer of 100px', function(done) {
                     $(element).scrollTie({ property: 'left' });
 
                     window.scrollTo(0, 300);
-                    
+
                     setTimeout(function(){
                         expect(element.style.left).to.equal('30px');
                         done();
                         window.scrollTo(0, 0);
                     }, timeoutDelay);
                 })
-            
+
             })
 
             describe('true', function() {
@@ -215,14 +215,14 @@ describe('ScrollTie', function() {
                     $(element).scrollTie({ property: 'left', animateWhenOutOfView: true });
 
                     window.scrollTo(0, 300);
-                    
+
                     setTimeout(function(){
                         expect(element.style.left).to.equal('330px');
                         done();
                         window.scrollTo(0, 0);
                     }, timeoutDelay);
                 })
-            
+
             })
 
         })
@@ -376,7 +376,7 @@ describe('ScrollTie', function() {
             window.scrollTo(0, 300);
 
             setTimeout(function() {
-                expect($el.css('top')).to.be.empty();
+                expect($el[0].style.top).to.be.empty();
                 done();
             }, timeoutDelay);
         })

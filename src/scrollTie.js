@@ -56,13 +56,13 @@ function ScrollTie(element, opts, undefined) {
 
     // auto-initialize if manual option is falsy
     if (!this.manualInit) {
-        this.init();        
+        this.init();
     }
 
 }
 
 $.extend(ScrollTie.prototype, {
-    
+
     init: function() {
         var _this = this;
 
@@ -74,7 +74,10 @@ $.extend(ScrollTie.prototype, {
         this.calculatedDelay = this.calculateDelay();
 
         // call animate to position things
-        if (this.canAnimate()) this.animate();
+        var animate = this.canAnimate() ? this.animate() :
+
+        // allows a plugin to know when the initial animation is finished
+        this.promise = this.canAnimate() ? this.animate() : $.Deferred().resolve();
 
         // always listen to the specified event
         this.$context.on(this.evt + '.' + this.id, this.scrollHandler.bind(this));
@@ -106,7 +109,7 @@ $.extend(ScrollTie.prototype, {
         if (!this.raf) {
             this.animate();
             return;
-        } 
+        }
 
         // use raf if possible to request animation frame
         if (!this.isQueued) {
@@ -119,7 +122,7 @@ $.extend(ScrollTie.prototype, {
         this.isQueued = false;
 
         if (!this.lastFrameWasAnimated) this.propertyUpdater.onStart(this.el);
-        
+
         var moveValue = this.calculateMoveValue();
 
         // sets new property value with check for transform/prefix requirements

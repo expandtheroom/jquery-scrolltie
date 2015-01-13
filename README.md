@@ -2,6 +2,8 @@
 
 ###a jQuery plugin that ties a CSS property to scroll###
 
+[![Build Status](https://travis-ci.org/expandtheroom/jquery-scrolltie.svg)](https://travis-ci.org/expandtheroom/jquery-scrolltie)
+
 *Supports modern browsers and IE9+ (could be modified to support IE8 but need seems too small)*
 
 This plugin is useful for creating parallax motion or similar effects in which a CSS property needs to be incremented on user scroll.  Here are a handful sites currently using ScrollTie (some are using previous (unreleased) versions):
@@ -156,6 +158,7 @@ Recalculate offsets, delays, and element positions - useful for when the dom cha
 
 To test, you will need to run npm install to get test library packages.  Current test suite is located in the tests directory.
 
+Open the `tests/index.html` file in your web browser to run the tests.
 
 ## Contribution guidelines ##
 
