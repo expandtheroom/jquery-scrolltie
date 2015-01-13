@@ -62,7 +62,7 @@ _string_ (required) CSS property or one of the following supported shorthands:
 _number_ (default: 1) Relative to speed of scroll, where 1 moves *at* speed of scroll, and 2 moves twice as fast as speed of scroll
 
 ### stopAtValue ###
-_number_ When the property is incremented to this value, stop moving element
+_number_ or _function_ When the property is incremented to this value, stop moving element. Function option must return a number.
 
 ### reverseDirection ###
 _boolean_ (default: false) Decrease property value on scroll.
