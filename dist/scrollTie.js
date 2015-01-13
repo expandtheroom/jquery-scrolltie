@@ -325,7 +325,7 @@ function PropertyUpdater(element, opts) {
     this.property = this._getProperty();
     this.reverseDirection = opts.reverseDirection;
     this.speed = this._getSpeed();
-    this.stopAtValue = opts.stopAtValue;
+    this.stopAtValue = typeof opts.stopAtValue === 'function' ? opts.stopAtValue() : opts.stopAtValue;
     this.originalVal = opts.originalVal !== undefined ? opts.originalVal : this._getOriginalVal();
     this.propertyValueFormat = opts.propertyValueFormat || this._createPropertyValueFormatter();
 
