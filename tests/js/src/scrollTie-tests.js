@@ -6,7 +6,7 @@ var $doc = $(document),
 /** listen for scrollend
 /*-------------------------------------------- */
 
-var timeoutDelay = 20,
+var timeoutDelay = 40,
     scrollTicker = 0;
 
 function detectScrollStop(ticker) {
@@ -48,7 +48,6 @@ describe('ScrollTie', function() {
 
     afterEach(function(done) {
         $(element).remove();
-        $doc.off();
         done();
     })
 
