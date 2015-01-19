@@ -85,13 +85,13 @@ module.exports = function(el) {
     /*-------------------------------------------- */
     /** Requires */
     /*-------------------------------------------- */
-
+    
     var ScrollTie = require('./scrollTie');
 
     /*-------------------------------------------- */
     /** Variables */
     /*-------------------------------------------- */
-
+    
     var allScrollTiedElements = [],
         scrollTiedElementCounter = 0,
         publicGlobalMethods,
@@ -100,7 +100,7 @@ module.exports = function(el) {
     /*-------------------------------------------- */
     /** Methods to Expose on jQuery */
     /*-------------------------------------------- */
-
+    
     publicGlobalMethods = {
         destroy: function() {
             $.each(allScrollTiedElements, function(i, scrollTie) {
@@ -138,7 +138,7 @@ module.exports = function(el) {
     /*-------------------------------------------- */
     /** Methods to Expose on jQuery object of Element */
     /*-------------------------------------------- */
-
+    
     publicInstanceMethods = {
         destroy: function() {
             this.destroy(allScrollTiedElements);
@@ -212,7 +212,6 @@ module.exports = function(el) {
     };
 
 })(jQuery);
-
 },{"./scrollTie":10}],5:[function(require,module,exports){
 /*-------------------------------------------- */
 /** Exports */

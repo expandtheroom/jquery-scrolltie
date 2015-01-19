@@ -1,5 +1,32 @@
-var timeoutDelay = 30,
+var $doc = $(document),
     parse2dTransformMatrix = require('../../../src/helpers/parse2dTransformMatrix');
+
+/*-------------------------------------------- */
+/** Set up little debounce to                  */
+/** listen for scrollend
+/*-------------------------------------------- */
+
+var timeoutDelay = 20,
+    scrollTicker = 0;
+
+function detectScrollStop(ticker) {
+
+    // debounce until scroll is over
+    setTimeout(function(){
+        if (ticker == scrollTicker) {
+            $(document).trigger('scrollend');
+        }
+    }, timeoutDelay);
+}
+
+$(window).on('scroll', function() {
+    scrollTicker++;
+    detectScrollStop(scrollTicker);
+});
+
+/*-------------------------------------------- */
+/** Actual Test */
+/*-------------------------------------------- */
 
 describe('ScrollTie', function() {
     var element;
@@ -21,6 +48,7 @@ describe('ScrollTie', function() {
 
     afterEach(function(done) {
         $(element).remove();
+        $doc.off();
         done();
     })
 
@@ -43,23 +71,25 @@ describe('ScrollTie', function() {
             it('should handle a transform shorthand', function(done) {
                 $(element).scrollTie({ property: 'translateX' });
 
-                window.scrollTo(0, 500);
-
-                setTimeout(function(){
+                $doc.one('scrollend', function() {
                     expect(parse2dTransformMatrix(element).translateX).to.equal(500);
                     done();
-                }, timeoutDelay);
+                    window.scrollTo(0, 0);
+                });
+
+                window.scrollTo(0, 500);
             })
 
             it('should handle a backgroundPosition axis', function(done) {
                 $(element).scrollTie({ property: 'backgroundPositionX', speed: 1 });
 
-                window.scrollTo(0, 500);
-
-                setTimeout(function(){
+                $doc.one('scrollend', function() {
                     expect(getComputedStyle(element).backgroundPosition.split(' ')[0]).to.equal('500px');
                     done();
-                }, timeoutDelay);
+                    window.scrollTo(0, 0);
+                });
+
+                window.scrollTo(0, 500);
             })
 
         })
@@ -68,25 +98,25 @@ describe('ScrollTie', function() {
 
             it('should increment property to stopAtValue', function(done) {
                 $(element).scrollTie({ property: 'top', stopAtValue: 500 });
-                window.scrollTo(0, 500);
 
-                setTimeout(function(){
+                $doc.one('scrollend', function() {
                     expect(element.style.top).to.equal('500px');
                     done();
-                }, timeoutDelay);
+                });
 
+                window.scrollTo(0, 500);
             })
 
             it('should not increment property higher than stopAtValue', function(done) {
                 $(element).scrollTie({ property: 'top', stopAtValue: 500 });
-                window.scrollTo(0, 501);
 
-                setTimeout(function(){
+                $doc.one('scrollend', function() {
                     expect(element.style.top).to.equal('500px');
                     done();
                     window.scrollTo(0, 0);
-                }, timeoutDelay);
+                });
 
+                window.scrollTo(0, 501);
             })
 
         })
@@ -97,14 +127,13 @@ describe('ScrollTie', function() {
                 $(element).css({top: '500px'});
                 $(element).scrollTie({ property: 'top', reverseDirection: true });
 
-                window.scrollTo(0, 500);
-
-                setTimeout(function(){
+                $doc.one('scrollend', function() {
                     expect(element.style.top).to.equal('0px');
                     done();
                     window.scrollTo(0, 0);
-                }, timeoutDelay);
+                });
 
+                window.scrollTo(0, 500);
             })
 
         })
@@ -114,14 +143,13 @@ describe('ScrollTie', function() {
             it('should not increment property when scroll is less than delay (px value)', function(done) {
                 $(element).scrollTie({ property: 'top', delay: 500 });
 
-                window.scrollTo(0, 500);
-
-                setTimeout(function(){
+                $doc.one('scrollend', function() {
                     expect(element.style.top).to.equal('0px');
                     done();
                     window.scrollTo(0, 0);
-                }, timeoutDelay);
+                });
 
+                window.scrollTo(0, 500);
             })
 
             it('should not increment property when scroll is less than delay (function return value)', function(done) {
@@ -129,26 +157,26 @@ describe('ScrollTie', function() {
                     return 500;
                 } });
 
-                window.scrollTo(0, 500);
-
-                setTimeout(function(){
+                $doc.one('scrollend', function() {
                     expect(element.style.top).to.equal('0px');
                     done();
                     window.scrollTo(0, 0);
-                }, timeoutDelay);
+                });
+
+                window.scrollTo(0, 500);
             })
 
             it('should begin incrementing property when scroll position is greater than delay', function(done) {
                 $(element).scrollTie({ property: 'top', delay: 500});
                 $(element).css({position: 'absolute'});
 
-                window.scrollTo(0, 501);
-
-                setTimeout(function(){
+                $doc.one('scrollend', function() {
                     expect(element.style.top).to.equal('1px');
                     done();
                     window.scrollTo(0, 0);
-                }, timeoutDelay);
+                });
+
+                window.scrollTo(0, 501);
             })
 
         })
@@ -159,13 +187,13 @@ describe('ScrollTie', function() {
                 $(element).scrollTie({ property: 'top', speed: 2 });
                 $(element).css({position: 'absolute'});
 
-                window.scrollTo(0, 500);
-
-                setTimeout(function(){
+                $doc.one('scrollend', function() {
                     expect(element.style.top).to.equal('1000px');
                     done();
                     window.scrollTo(0, 0);
-                }, timeoutDelay);
+                });
+
+                window.scrollTo(0, 500);
             })
 
         })
@@ -182,24 +210,24 @@ describe('ScrollTie', function() {
                 it('should increment value while element is in view', function(done) {
                     $(element).scrollTie({ property: 'left' });
 
-                    window.scrollTo(0, 199);
-
-                    setTimeout(function(){
+                    $doc.one('scrollend', function() {
                         expect(element.style.left).to.equal('229px');
                         done();
-                    }, timeoutDelay);
+                    });
+
+                    window.scrollTo(0, 199);
                 })
 
                 it('should return to original value when element is no longer in view, with buffer of 100px', function(done) {
                     $(element).scrollTie({ property: 'left' });
 
-                    window.scrollTo(0, 300);
-
-                    setTimeout(function(){
+                    $doc.one('scrollend', function() {
                         expect(element.style.left).to.equal('30px');
                         done();
                         window.scrollTo(0, 0);
-                    }, timeoutDelay);
+                    });
+
+                    window.scrollTo(0, 300);
                 })
 
             })
@@ -214,13 +242,13 @@ describe('ScrollTie', function() {
                 it('should continue incrementing value when element is no longer in view', function(done) {
                     $(element).scrollTie({ property: 'left', animateWhenOutOfView: true });
 
-                    window.scrollTo(0, 300);
-
-                    setTimeout(function(){
+                    $doc.one('scrollend', function() {
                         expect(element.style.left).to.equal('330px');
                         done();
                         window.scrollTo(0, 0);
-                    }, timeoutDelay);
+                    });
+
+                    window.scrollTo(0, 300);
                 })
 
             })
@@ -233,22 +261,23 @@ describe('ScrollTie', function() {
             it('should call onStart once after first animation frame', function(done) {
                 $(element).scrollTie({ property: 'top', onStart: onStart });
 
-                window.scrollTo(0, 500);
-
-                setTimeout(function() {
+                $doc.one('scrollend', function() {
                     expect(onStart.calledOnce).to.be.true();
                     done();
-                }, timeoutDelay);
+                });
+
+                window.scrollTo(0, 500);
             })
 
             it('should not call onStart on subsequent scrolls', function(done) {
-                window.scrollTo(0, 501);
 
-                setTimeout(function() {
+                $doc.one('scrollend', function() {
                     expect(onStart.callCount).to.equal(1);
                     done();
                     window.scrollTo(0, 0);
-                }, timeoutDelay);
+                });
+
+                window.scrollTo(0, 501);
             })
 
         })
@@ -261,23 +290,24 @@ describe('ScrollTie', function() {
                 it('calls afterStop when stopAtValue is reached', function(done) {
                     $(element).scrollTie({ property: 'top', afterStop: afterStop, stopAtValue: 500 });
 
-                    window.scrollTo(0, 500);
-
-                    setTimeout(function() {
+                    $doc.one('scrollend', function() {
                         expect(afterStop.callCount).to.equal(1);
                         done();
                         window.scrollTo(0, 0);
-                    }, timeoutDelay);
+                    });
+
+                    window.scrollTo(0, 500);
                 })
 
                 it('calls afterStop if stopAtValue is reached again', function(done) {
-                    window.scrollTo(0, 500);
 
-                    setTimeout(function() {
+                    $doc.one('scrollend', function() {
                         expect(afterStop.callCount).to.equal(2);
                         done();
                         window.scrollTo(0, 0);
-                    }, timeoutDelay);
+                    });
+                    
+                    window.scrollTo(0, 500);
                 })
             })
 
@@ -293,10 +323,10 @@ describe('ScrollTie', function() {
 
                     $(element).scrollTie('pause');
 
-                    setTimeout(function() {
+                    $doc.one('scrollend', function() {
                         expect(onPause.callCount).to.equal(1);
                         done();
-                    }, timeoutDelay);
+                    });
                 })
             })
 
@@ -307,15 +337,12 @@ describe('ScrollTie', function() {
 
             describe('should call onDestroy when scrollTied element is manually destroyed', function() {
 
-                it('calls onDestroy when destroy() is called on scrollTied element', function(done) {
+                it('calls onDestroy when destroy() is called on scrollTied element', function() {
                     $(element).scrollTie({ property: 'top', onDestroy: onDestroy });
 
                     $(element).scrollTie('destroy');
 
-                    setTimeout(function() {
-                        expect(onDestroy.callCount).to.equal(1);
-                        done();
-                    }, timeoutDelay);
+                    expect(onDestroy.callCount).to.equal(1);
                 })
             })
 
@@ -335,24 +362,24 @@ describe('ScrollTie', function() {
         it('should stop updating property on scroll while paused', function(done) {
             $el.scrollTie('pause');
 
-            window.scrollTo(0, 500);
-
-            setTimeout(function() {
+            $doc.one('scrollend', function() {
                 expect($el.css('top')).to.equal('0px');
                 done();
-            }, timeoutDelay);
+            });
+
+            window.scrollTo(0, 500);
         })
 
         it('should start updating property on scroll starting from last pause value', function(done) {
             $el.scrollTie('restart');
 
-            window.scrollTo(0, 600);
-
-            setTimeout(function() {
+            $doc.one('scrollend', function() {
                 expect($el.css('top')).to.equal('100px');
                 done();
                 window.scrollTo(0, 0);
-            }, timeoutDelay);
+            });
+
+            window.scrollTo(0, 600);
         })
 
     })
@@ -373,12 +400,13 @@ describe('ScrollTie', function() {
         })
 
         it('should no longer update property', function(done) {
-            window.scrollTo(0, 300);
 
-            setTimeout(function() {
+            $doc.one('scrollend', function() {
                 expect($el[0].style.top).to.be.empty();
                 done();
-            }, timeoutDelay);
+            });
+
+            window.scrollTo(0, 300);
         })
 
         it('should remove plugin data from jQuery object', function() {
