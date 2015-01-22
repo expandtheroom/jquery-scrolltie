@@ -4,10 +4,11 @@
 
 module.exports = TransformPropertyUpdater;
 
-
 /*-------------------------------------------- */
 /** Requires */
 /*-------------------------------------------- */
+
+var $ = require('jquery');
 
 var PropertyUpdater = require('./propertyUpdater'),
     extend = require('../helpers/extend'),

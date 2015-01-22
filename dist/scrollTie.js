@@ -1,20 +1,16 @@
-(function (root, factory) {
-  if (typeof define === 'function' && define.amd) {
-    // AMD. Register as an anonymous module.
-    define(["jquery"], function (jquery) {
-      return (root.returnExportsGlobal = factory(jquery));
-    });
-  } else if (typeof exports === 'object') {
-    // Node. Does not work with strict CommonJS, but
-    // only CommonJS-like enviroments that support module.exports,
-    // like Node.
+(function(root, factory) {
+  if(typeof exports === 'object') {
     module.exports = factory(require("jquery"));
-  } else {
+  }
+  else if(typeof define === 'function' && define.amd) {
+    define(["jquery"], factory);
+  }
+  else {
     factory(jQuery);
   }
-}(this, function (jquery) {
-
-!function(e){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=e();else if("function"==typeof define&&define.amd)define([],e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.ScrollTie=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+}(this, function(jquery) {
+  var require=function(name){return {"jquery": $}[name];};
+  (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /*-------------------------------------------- */
 /** Helper to determine if an element is visible */
 /*-------------------------------------------- */
@@ -46,13 +42,15 @@ module.exports = function(el, scrollY, buffer) {
 /** Helper to use Object.create with $.extend */
 /*-------------------------------------------- */
 
+var $ = require('jquery');
+
 module.exports = function(parent, child, methods) {
     child.prototype = Object.create(parent.prototype);
     child.prototype.constructor = child;
 
     $.extend(child.prototype, methods);
 };
-},{}],3:[function(require,module,exports){
+},{"jquery":"jquery"}],3:[function(require,module,exports){
 /*-------------------------------------------- */
 /** Helper to extract real values from         */
 /** 2d Transform Matrix */
@@ -101,7 +99,8 @@ module.exports = function(el) {
 /** Requires */
 /*-------------------------------------------- */
 
-var ScrollTie = require('./scrollTie');
+var $ = require('jquery'),
+    ScrollTie = require('./scrollTie');
 
 /*-------------------------------------------- */
 /** Variables */
@@ -225,7 +224,7 @@ $.scrollTie = function() {
 
     return allScrollTiedElements;
 };
-},{"./scrollTie":10}],5:[function(require,module,exports){
+},{"./scrollTie":10,"jquery":"jquery"}],5:[function(require,module,exports){
 /*-------------------------------------------- */
 /** Exports */
 /*-------------------------------------------- */
@@ -235,6 +234,8 @@ module.exports = BgPositionPropertyUpdater;
 /*-------------------------------------------- */
 /** Requires */
 /*-------------------------------------------- */
+
+var $ = require('jquery');
 
 var PropertyUpdater = require('./propertyUpdater'),
     extend = require('../helpers/extend');
@@ -278,7 +279,7 @@ extend(PropertyUpdater, BgPositionPropertyUpdater, {
         return this.backgroundPositionAxis === 'backgroundPositionY' ? parseInt(bgPosition[1]) : parseInt(bgPosition[0]);
     }
 });
-},{"../helpers/extend":2,"./propertyUpdater":7}],6:[function(require,module,exports){
+},{"../helpers/extend":2,"./propertyUpdater":7,"jquery":"jquery"}],6:[function(require,module,exports){
 /*-------------------------------------------- */
 /** Exports */
 /*-------------------------------------------- */
@@ -319,6 +320,14 @@ extend(PropertyUpdater, OpacityPropertyUpdater, {
     }
 });
 },{"../helpers/extend":2,"./propertyUpdater":7}],7:[function(require,module,exports){
+'use strict';
+
+/*-------------------------------------------- */
+/** Requires */
+/*-------------------------------------------- */
+
+var $ = require('jquery');
+
 /*-------------------------------------------- */
 /** Exports */
 /*-------------------------------------------- */
@@ -451,7 +460,7 @@ $.extend(PropertyUpdater.prototype, {
 
 });
 
-},{}],8:[function(require,module,exports){
+},{"jquery":"jquery"}],8:[function(require,module,exports){
 /*-------------------------------------------- */
 /** Simple Factory to create PropertyUpdaters */
 /** Add more as special support is needed
@@ -482,10 +491,11 @@ module.exports.create = function(element, opts) {
 
 module.exports = TransformPropertyUpdater;
 
-
 /*-------------------------------------------- */
 /** Requires */
 /*-------------------------------------------- */
+
+var $ = require('jquery');
 
 var PropertyUpdater = require('./propertyUpdater'),
     extend = require('../helpers/extend'),
@@ -583,7 +593,7 @@ extend(PropertyUpdater, TransformPropertyUpdater, {
 
 });
 
-},{"../helpers/extend":2,"../helpers/parse2dTransformMatrix":3,"./propertyUpdater":7}],10:[function(require,module,exports){
+},{"../helpers/extend":2,"../helpers/parse2dTransformMatrix":3,"./propertyUpdater":7,"jquery":"jquery"}],10:[function(require,module,exports){
 /*-------------------------------------------- */
 /** Exports */
 /*-------------------------------------------- */
@@ -593,6 +603,8 @@ module.exports = ScrollTie;
 /*-------------------------------------------- */
 /** Requires */
 /*-------------------------------------------- */
+
+var $ = require('jquery');
 
 var propertyUpdaterFactory = require('./propertyUpdaters/propertyUpdaterFactory'),
     elementIsInView = require('./helpers/elementIsInView');
@@ -788,7 +800,7 @@ $.extend(ScrollTie.prototype, {
 
 });
 
-},{"./helpers/elementIsInView":1,"./propertyUpdaters/propertyUpdaterFactory":8}]},{},[4])(4)
-});
+},{"./helpers/elementIsInView":1,"./propertyUpdaters/propertyUpdaterFactory":8,"jquery":"jquery"}]},{},[4]);
 
+  return ;
 }));

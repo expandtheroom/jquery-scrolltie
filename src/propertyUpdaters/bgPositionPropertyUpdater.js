@@ -8,6 +8,8 @@ module.exports = BgPositionPropertyUpdater;
 /** Requires */
 /*-------------------------------------------- */
 
+var $ = require('jquery');
+
 var PropertyUpdater = require('./propertyUpdater'),
     extend = require('../helpers/extend');
 

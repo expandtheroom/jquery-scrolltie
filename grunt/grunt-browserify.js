@@ -4,10 +4,7 @@ module.exports = function(grunt) {
 
         dev: {
             options: {
-              external: ['jquery'],
-              browserifyOptions: {
-                  standalone: 'ScrollTie'
-              },
+              external: ['jquery']
             },
             files: {
                 'dist/scrollTie.js': ['src/plugin.js']
@@ -17,10 +14,7 @@ module.exports = function(grunt) {
         prod: {
             options: {
                 transform: ['uglifyify'],
-                external: ['jquery'],
-                browserifyOptions: {
-                    standalone: 'ScrollTie'
-                }
+                external: ['jquery']
             },
             files: {
                 'dist/scrollTie.min.js': ['src/plugin.js']

@@ -8,6 +8,8 @@ module.exports = ScrollTie;
 /** Requires */
 /*-------------------------------------------- */
 
+var $ = require('jquery');
+
 var propertyUpdaterFactory = require('./propertyUpdaters/propertyUpdaterFactory'),
     elementIsInView = require('./helpers/elementIsInView');
 

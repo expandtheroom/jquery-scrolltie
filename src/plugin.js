@@ -8,7 +8,8 @@
 /** Requires */
 /*-------------------------------------------- */
 
-var ScrollTie = require('./scrollTie');
+var $ = require('jquery'),
+    ScrollTie = require('./scrollTie');
 
 /*-------------------------------------------- */
 /** Variables */
