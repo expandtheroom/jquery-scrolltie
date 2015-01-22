@@ -170,3 +170,12 @@ Log an issue, fork the repo, and create a pull request.  Include Issue # and cha
 ### v1.0.0 ###
 
 * Initial release.
+
+### v1.0.1 ###
+
+* Allow function to be passed in for stopAtValue option
+
+
+### v1.0.2 ###
+
+* Fix UMD by adding jquery as a dependency in all environments.
