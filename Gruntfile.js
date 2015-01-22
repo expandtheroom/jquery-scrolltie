@@ -11,6 +11,6 @@ module.exports = function(grunt) {
     /** Register Tasks */
     /*-------------------------------------------- */
 
-    grunt.registerTask('default', ['less', 'browserify' ]);
+    grunt.registerTask('default', ['less', 'browserify', 'umd' ]);
 
 };

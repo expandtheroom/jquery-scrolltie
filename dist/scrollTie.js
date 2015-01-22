@@ -1,3 +1,19 @@
+(function (root, factory) {
+  if (typeof define === 'function' && define.amd) {
+    // AMD. Register as an anonymous module.
+    define(["jquery"], function (jquery) {
+      return (root.returnExportsGlobal = factory(jquery));
+    });
+  } else if (typeof exports === 'object') {
+    // Node. Does not work with strict CommonJS, but
+    // only CommonJS-like enviroments that support module.exports,
+    // like Node.
+    module.exports = factory(require("jquery"));
+  } else {
+    factory(jQuery);
+  }
+}(this, function (jquery) {
+
 !function(e){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=e();else if("function"==typeof define&&define.amd)define([],e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.ScrollTie=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /*-------------------------------------------- */
 /** Helper to determine if an element is visible */
@@ -78,140 +94,137 @@ module.exports = function(el) {
 /**
  * ScrollTie: Ties a CSS property to user scroll (common use is Parallax animation)
  */
-(function($){
 
-    'use strict';
+'use strict';
 
-    /*-------------------------------------------- */
-    /** Requires */
-    /*-------------------------------------------- */
-    
-    var ScrollTie = require('./scrollTie');
+/*-------------------------------------------- */
+/** Requires */
+/*-------------------------------------------- */
 
-    /*-------------------------------------------- */
-    /** Variables */
-    /*-------------------------------------------- */
-    
-    var allScrollTiedElements = [],
-        scrollTiedElementCounter = 0,
-        publicGlobalMethods,
-        publicInstanceMethods;
+var ScrollTie = require('./scrollTie');
 
-    /*-------------------------------------------- */
-    /** Methods to Expose on jQuery */
-    /*-------------------------------------------- */
-    
-    publicGlobalMethods = {
-        destroy: function() {
-            $.each(allScrollTiedElements, function(i, scrollTie) {
-                scrollTie.destroy(allScrollTiedElements);
-            });
-        },
+/*-------------------------------------------- */
+/** Variables */
+/*-------------------------------------------- */
 
-        pause: function() {
-            $.each(allScrollTiedElements, function(i, scrollTie) {
-                scrollTie.pause();
-            });
-        },
+var allScrollTiedElements = [],
+    scrollTiedElementCounter = 0,
+    publicGlobalMethods,
+    publicInstanceMethods;
 
-        restart: function() {
-            $.each(allScrollTiedElements, function(i, scrollTie) {
-                scrollTie.start();
-            });
-        },
+/*-------------------------------------------- */
+/** Methods to Expose on jQuery */
+/*-------------------------------------------- */
 
-        refresh: function() {
-            $.each(allScrollTiedElements, function(i, scrollTie) {
-                scrollTie.refresh();
-            });
-        },
+publicGlobalMethods = {
+    destroy: function() {
+        $.each(allScrollTiedElements, function(i, scrollTie) {
+            scrollTie.destroy(allScrollTiedElements);
+        });
+    },
 
-        init: function() {
-            $.each(allScrollTiedElements, function(i, scrollTie) {
-                if (!scrollTie.isInitialized) {
-                    scrollTie.init();
-                }
-            });
-        }
-    };
+    pause: function() {
+        $.each(allScrollTiedElements, function(i, scrollTie) {
+            scrollTie.pause();
+        });
+    },
 
-    /*-------------------------------------------- */
-    /** Methods to Expose on jQuery object of Element */
-    /*-------------------------------------------- */
-    
-    publicInstanceMethods = {
-        destroy: function() {
-            this.destroy(allScrollTiedElements);
-            return this.$el;
-        },
+    restart: function() {
+        $.each(allScrollTiedElements, function(i, scrollTie) {
+            scrollTie.start();
+        });
+    },
 
-        pause: function() {
-            this.pause();
-            return this.$el;
-        },
+    refresh: function() {
+        $.each(allScrollTiedElements, function(i, scrollTie) {
+            scrollTie.refresh();
+        });
+    },
 
-        restart: function() {
-            this.start();
-            return this.$el;
-        },
-
-        refresh: function() {
-            this.refresh();
-            return this.$el;
-        },
-
-        init: function() {
-            if (!this.isInitialized) this.init();
-            return this.$el;
-        }
-    };
-
-
-    /*-------------------------------------------- */
-    /** Export */
-    /*-------------------------------------------- */
-
-    $.fn.scrollTie = function ( options ) {
-
-        if (typeof options === 'string' || !options) {
-            var method = options;
-
-            if (!$(this).data().plugin_scrollTie) {
-                return $.error('ScrollTie not instantiated on this element');
-            } else if (publicInstanceMethods[method]) {
-                return publicInstanceMethods[method].apply($(this).data().plugin_scrollTie);
-            } else if (!method) {
-                return $.error('ScrollTie needs a string reference to a public method or option configuration object.');
-            } else {
-                return $.error('ScrollTie doesn\'t recognize the method ' + method);
-            }
-        }
-
-        return this.each(function () {
-            options.id = 'scrollTied' + scrollTiedElementCounter++;
-
-            if (!$.data(this, 'plugin_scrollTie')) {
-                var newScrollTie = new ScrollTie( this, options );
-
-                allScrollTiedElements.push(newScrollTie);
-
-                $.data(this, 'plugin_scrollTie', newScrollTie);
+    init: function() {
+        $.each(allScrollTiedElements, function(i, scrollTie) {
+            if (!scrollTie.isInitialized) {
+                scrollTie.init();
             }
         });
-    };
+    }
+};
 
-    $.scrollTie = function() {
-        var method = arguments[0],
-            args = arguments.length >= 2 ? [].slice.call(arguments, 1) : [];
+/*-------------------------------------------- */
+/** Methods to Expose on jQuery object of Element */
+/*-------------------------------------------- */
 
-        if (publicGlobalMethods[method]) {
-            return publicGlobalMethods[method].apply(null, args);
+publicInstanceMethods = {
+    destroy: function() {
+        this.destroy(allScrollTiedElements);
+        return this.$el;
+    },
+
+    pause: function() {
+        this.pause();
+        return this.$el;
+    },
+
+    restart: function() {
+        this.start();
+        return this.$el;
+    },
+
+    refresh: function() {
+        this.refresh();
+        return this.$el;
+    },
+
+    init: function() {
+        if (!this.isInitialized) this.init();
+        return this.$el;
+    }
+};
+
+
+/*-------------------------------------------- */
+/** Export */
+/*-------------------------------------------- */
+
+$.fn.scrollTie = function ( options ) {
+
+    if (typeof options === 'string' || !options) {
+        var method = options;
+
+        if (!$(this).data().plugin_scrollTie) {
+            return $.error('ScrollTie not instantiated on this element');
+        } else if (publicInstanceMethods[method]) {
+            return publicInstanceMethods[method].apply($(this).data().plugin_scrollTie);
+        } else if (!method) {
+            return $.error('ScrollTie needs a string reference to a public method or option configuration object.');
+        } else {
+            return $.error('ScrollTie doesn\'t recognize the method ' + method);
         }
+    }
 
-        return allScrollTiedElements;
-    };
+    return this.each(function () {
+        options.id = 'scrollTied' + scrollTiedElementCounter++;
 
-})(jQuery);
+        if (!$.data(this, 'plugin_scrollTie')) {
+            var newScrollTie = new ScrollTie( this, options );
+
+            allScrollTiedElements.push(newScrollTie);
+
+            $.data(this, 'plugin_scrollTie', newScrollTie);
+        }
+    });
+};
+
+$.scrollTie = function() {
+    var method = arguments[0],
+        args = arguments.length >= 2 ? [].slice.call(arguments, 1) : [];
+
+    if (publicGlobalMethods[method]) {
+        return publicGlobalMethods[method].apply(null, args);
+    }
+
+    return allScrollTiedElements;
+};
 },{"./scrollTie":10}],5:[function(require,module,exports){
 /*-------------------------------------------- */
 /** Exports */
@@ -777,3 +790,5 @@ $.extend(ScrollTie.prototype, {
 
 },{"./helpers/elementIsInView":1,"./propertyUpdaters/propertyUpdaterFactory":8}]},{},[4])(4)
 });
+
+}));
