@@ -1,6 +1,6 @@
 {
   "name": "jquery-scrolltie",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "keywords": [
     "jquery-plugin"
   ],
@@ -31,6 +31,7 @@
     "sinon": "^1.12.1",
     "sinon-chai": "^2.6.0",
     "uglifyify": "^2.6.0",
-    "grunt-umd": "^2.2.1"
+    "grunt-umd": "^2.2.1",
+    "karma-browserify": "^3.0.0"
   }
 }
