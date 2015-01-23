@@ -19,8 +19,9 @@ module.exports = function(grunt) {
         "karma-coverage"
       ],
       preprocessors: {
-        "src/*.js": ["coverage", "browserify"],
-        "src/**/*.js": ["coverage", "browserify"]
+        "src/plugin.js": ["browserify"],
+        "src/*.js": ["coverage"],
+        "src/**/*.js": ["coverage"]
       },
       coverageReporter: {
         type: "lcov",
