@@ -2,23 +2,19 @@
 /** Helper to determine if an element is visible */
 /*-------------------------------------------- */
 
+var $ = require('jquery');
+
 module.exports = function(el, scrollY, buffer) {
     buffer = buffer || 100;
 
-    var win = window,
-        body = document.body,
-        documentElement = document.documentElement;
+    var $win = $(window),
+        $el = $(el),
+        documentHeight = $(document).height();
 
-    var documentHeight = Math.max(
-        body.scrollHeight, documentElement.scrollHeight,
-        body.offsetHeight, documentElement.offsetHeight,
-        body.clientHeight, documentElement.clientHeight
-    );
-
-    var winHeight = win.innerHeight || document.documentElement.clientHeight || document.body.clientHeight,
+    var winHeight = $win.innerHeight(),
         totalScroll = scrollY + winHeight,
-        elOffsetTop = el.offsetTop,
-        elHeight = el.clientHeight;
+        elOffsetTop = $el.offset().top,
+        elHeight = $el.innerHeight();
 
     var isInView = elOffsetTop <= (totalScroll + buffer) && (totalScroll < (elOffsetTop + elHeight + winHeight + buffer));
 
