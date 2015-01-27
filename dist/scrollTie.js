@@ -529,7 +529,6 @@ function TransformPropertyUpdater(element, opts) {
     
     PropertyUpdater.call(this, element, opts);
     
-    this.staticTransformValue = this._getStaticTransformValue();
 }
 
 extend(PropertyUpdater, TransformPropertyUpdater, {
@@ -569,6 +568,8 @@ extend(PropertyUpdater, TransformPropertyUpdater, {
 
     _formatJqueryCssVal: function(moveValue) {
         moveValue = this.propertyValueFormat((this.transform == 'scale') ? moveValue : Math.floor(moveValue));
+        
+        this.staticTransformValue = this.staticTransformValue || this._getStaticTransformValue();
 
         var transformValueWithPrefixes = {
             transform: this.staticTransformValue + ' ' + moveValue
