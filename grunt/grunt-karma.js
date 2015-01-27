@@ -10,16 +10,18 @@ module.exports = function(grunt) {
       logLevel: "ERROR",
       reporters: ["dots", "coverage"],
       browsers: ["Firefox"],
-      frameworks: ["mocha"],
+      frameworks: ["browserify", "mocha"],
       plugins: [
+        "karma-browserify",
         "karma-mocha",
         "karma-chrome-launcher",
         "karma-firefox-launcher",
         "karma-coverage"
       ],
       preprocessors: {
-        "src/*.js": "coverage",
-        "src/**/*.js": "coverage"
+        "src/plugin.js": ["browserify"],
+        "src/*.js": ["coverage"],
+        "src/**/*.js": ["coverage"]
       },
       coverageReporter: {
         type: "lcov",
