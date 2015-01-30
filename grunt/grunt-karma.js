@@ -7,7 +7,7 @@ module.exports = function(grunt) {
       singleRun: true,
       captureTimeout: 7000,
       autoWatch: true,
-      logLevel: "ERROR",
+      logLevel: "DEBUG",
       reporters: ["dots", "coverage"],
       browsers: ["Firefox"],
       frameworks: ["browserify", "mocha"],

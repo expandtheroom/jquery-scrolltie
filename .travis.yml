@@ -31,7 +31,7 @@ before_install:
 before_script:
 - npm install -g grunt-cli
 script:
-- grunt karma
+- grunt browserify umd karma
 branches:
   only:
   - master
