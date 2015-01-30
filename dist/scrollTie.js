@@ -1,43 +1,27 @@
-(function(root, factory) {
-  if(typeof exports === 'object') {
-    module.exports = factory(require("jquery"));
-  }
-  else if(typeof define === 'function' && define.amd) {
-    define(["jquery"], factory);
-  }
-  else {
-    factory(jQuery);
-  }
-}(this, function(jquery) {
-  var require=function(name){return {"jquery": $}[name];};
-  (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /*-------------------------------------------- */
 /** Helper to determine if an element is visible */
 /*-------------------------------------------- */
 
+var $ = require('jquery');
+
 module.exports = function(el, scrollY, buffer) {
     buffer = buffer || 100;
 
-    var win = window,
-        body = document.body,
-        documentElement = document.documentElement;
+    var $win = $(window),
+        $el = $(el),
+        documentHeight = $(document).height();
 
-    var documentHeight = Math.max(
-        body.scrollHeight, documentElement.scrollHeight,
-        body.offsetHeight, documentElement.offsetHeight,
-        body.clientHeight, documentElement.clientHeight
-    );
-
-    var winHeight = win.innerHeight || document.documentElement.clientHeight || document.body.clientHeight,
+    var winHeight = $win.innerHeight(),
         totalScroll = scrollY + winHeight,
-        elOffsetTop = el.offsetTop,
-        elHeight = el.clientHeight;
+        elOffsetTop = $el.offset().top,
+        elHeight = $el.innerHeight();
 
     var isInView = elOffsetTop <= (totalScroll + buffer) && (totalScroll < (elOffsetTop + elHeight + winHeight + buffer));
 
     return isInView;
 };
-},{}],2:[function(require,module,exports){
+},{"jquery":"jquery"}],2:[function(require,module,exports){
 /*-------------------------------------------- */
 /** Helper to use Object.create with $.extend */
 /*-------------------------------------------- */
@@ -801,6 +785,3 @@ $.extend(ScrollTie.prototype, {
 });
 
 },{"./helpers/elementIsInView":1,"./propertyUpdaters/propertyUpdaterFactory":8,"jquery":"jquery"}]},{},[4]);
-
-  return ;
-}));
