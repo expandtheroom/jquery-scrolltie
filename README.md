@@ -179,3 +179,8 @@ Log an issue, fork the repo, and create a pull request.  Include Issue # and cha
 ### v1.0.2 ###
 
 * Fix UMD by adding jquery as a dependency in all environments.
+
+
+### v1.0.3 ###
+
+* Wait until first animate request to calculate static transform value
