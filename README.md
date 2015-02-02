@@ -8,6 +8,7 @@
 
 This plugin is useful for creating parallax motion or similar effects in which a CSS property needs to be incremented on user scroll.  Here are a handful sites currently using ScrollTie (some are using previous (unreleased) versions):
 
+* [Sprout Original: Ruff-Ruff, Tweet, and Dave](http://sproutonline.com/ruffrufftweetanddave/)
 * [Travel + Leisure Epic Journeys](http://www.travelandleisure.com/promo/epic-journeys)
 * [Initiative.com](http://initiative.com/) - homepage
 * [Dr. Cool Recovery](http://www.drcoolrecovery.com) - homepage
@@ -27,6 +28,7 @@ npm install jquery-scrolltie
 bower install jquery-scrolltie
 ```
 ####DIY####
+
 Download or clone repo and include js/dist/scrollTie.min.js (unminified version available as well)
 
 **ScrollTie depends on jQuery** - be sure to include a stable version before the plugin script.  Tested with latest stable version 1 and 2.
