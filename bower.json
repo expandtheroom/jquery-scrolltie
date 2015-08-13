@@ -5,7 +5,7 @@
     "Megan Tong <megan@expandtheroom.com>"
   ],
   "description": "a jQuery plugin that ties a CSS property to scroll",
-  "main": "js/dist/scrollTie.min.js",
+  "main": "dist/scrollTie.min.js",
   "moduleType": [
     "amd",
     "es6",
